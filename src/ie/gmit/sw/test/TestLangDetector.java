@@ -11,7 +11,7 @@ import java.io.File;
 
 public class TestLangDetector {
     public static void main(String[] args) throws InterruptedException {
-        File wili = new File("./res/wili-2018-Small-11750-Edited.txt");
+        File wili = new File("./wili-2018-Small-11750-Edited.txt");
 
         // build k-mer distribution for all languages from language dataset
         LangDistStore distStore = new LangDistStoreBuilder()
