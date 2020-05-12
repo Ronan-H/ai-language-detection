@@ -38,6 +38,4 @@ public interface LangDistStore {
     default LangDist getNewDistOfSameType() {
         return getNewDistOfSameType(Lang.Unidentified);
     }
-
-    void writeToFile(String filePath) throws IOException;
 }

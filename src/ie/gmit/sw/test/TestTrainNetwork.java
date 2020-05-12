@@ -1,5 +1,6 @@
 package ie.gmit.sw.test;
 
+import ie.gmit.sw.Lang;
 import ie.gmit.sw.code_stubs.Utilities;
 import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationReLU;
@@ -20,16 +21,18 @@ import java.io.File;
 
 public class TestTrainNetwork {
     public static void main(String[] args) {
-        int inputs = 512; //Change this to the number of input neurons
-        int outputs = 235; //Change this to the number of output neurons
+        int epochs = 10;
+
+        int inputs = TestAIClassification.HASH_RANGE; //Change this to the number of input neurons
+        int outputs = Lang.values().length - 1; //Change this to the number of output neurons
 
         System.out.println("Building the neural network...\n");
 
         //Configure the neural network topology.
         BasicNetwork network = new BasicNetwork();
         network.addLayer(new BasicLayer(null, true, inputs));
-        network.addLayer(new BasicLayer(new ActivationReLU(), true, 512));
-        network.addLayer(new BasicLayer(new ActivationReLU(), true, 512));
+        network.addLayer(new BasicLayer(new ActivationReLU(), true, TestAIClassification.HASH_RANGE));
+        network.addLayer(new BasicLayer(new ActivationReLU(), true, TestAIClassification.HASH_RANGE / 2));
         network.addLayer(new BasicLayer(new ActivationSoftMax(), false, outputs));
         network.getStructure().finalizeStructure();
         network.reset();
@@ -45,13 +48,13 @@ public class TestTrainNetwork {
         CrossValidationKFold cv = new CrossValidationKFold(train, 5);
 
         //Train the neural network
-        for (int epoch = 1; epoch <= 10; epoch++) {
+        for (int epoch = 1; epoch <= epochs; epoch++) {
             System.out.printf("Epoch %2d ... ", epoch);
             cv.iteration();
             System.out.println(" Error: " + cv.getError());
         }
 
-        System.out.println("Finished training.");
+        System.out.println("\nFinished training.");
 
         Encog.getInstance().shutdown();
 

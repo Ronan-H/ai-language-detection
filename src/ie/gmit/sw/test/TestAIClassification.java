@@ -8,12 +8,15 @@ import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
 
 public class TestAIClassification {
+    public static int HASH_RANGE = 256;
+    public static int K = 5;
+
     public static void main(String[] args) {
-        String sampleString = "This is an English sentence.";
+        String sampleString = "this is a classification test for the network";
 
         System.out.printf("Creating a vector hash for \"%s\"...%n", sampleString);
-        HashedLangDist dist = new HashedLangDist(Lang.Unidentified, 512);
-        dist.recordKmer(sampleString.toCharArray());
+        HashedLangDist dist = new HashedLangDist(Lang.Unidentified, HASH_RANGE);
+        dist.recordSample(sampleString, K);
         double[] hashVector = Utilities.normalize(dist.getFrequencies(), -1, 1);
 
         System.out.println("Loading the neural network...");
@@ -22,6 +25,12 @@ public class TestAIClassification {
         System.out.println("Classifying...\n");
         Lang classification = Lang.values()[network.classify(sample)];
 
-        System.out.printf("Classification: %s%n", classification.getLanguageName());
+        System.out.println("Probabilities:");
+        double[] outputVector = network.compute(sample).getData();
+        for (int i = 0; i < outputVector.length; i++) {
+            System.out.printf("\t%-27s -- %.3f%n", Lang.values()[i].getLanguageName() + ": ", outputVector[i]);
+        }
+
+        System.out.printf("%n%nClassification: %s%n", classification.getLanguageName());
     }
 }

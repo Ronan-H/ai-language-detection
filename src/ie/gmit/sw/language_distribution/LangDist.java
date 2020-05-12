@@ -33,6 +33,10 @@ public abstract class LangDist {
      * @param k Size of k-mer.
      */
     public void recordSample(String line, int k) {
+        if (k == 0) {
+            return;
+        }
+
         char[] sample = line.toCharArray();
         char[] kmer = new char[k];
 
@@ -45,6 +49,8 @@ public abstract class LangDist {
             recordKmer(kmer);
             numRecords++;
         }
+
+        recordSample(line, k - 1);
     }
 
     /**

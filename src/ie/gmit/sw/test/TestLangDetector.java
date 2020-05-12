@@ -8,7 +8,6 @@ import ie.gmit.sw.language_distribution.LangDistStoreBuilder;
 import ie.gmit.sw.sample_parser.FileSampleParser;
 
 import java.io.File;
-import java.io.IOException;
 
 public class TestLangDetector {
     public static void main(String[] args) {
@@ -34,13 +33,5 @@ public class TestLangDetector {
                 "One of the limiting features of multi-layer perceptron is that the number of input neurons is fixed, causing issues when dealing with variable-length input sources such as text."
         ).getLanguageName();
         System.out.printf("Result: %s%n%n", result);
-
-        System.out.println("Writing training data to a file...");
-        try {
-            distStore.writeToFile("./training-data.csv");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Finished. Exiting...");
     }
 }
