@@ -2,7 +2,10 @@ package ie.gmit.sw.code_stubs;
 
 import java.io.File;
 
+import org.encog.Encog;
+import org.encog.engine.network.activation.ActivationReLU;
 import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.engine.network.activation.ActivationSoftMax;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.buffer.MemoryDataLoader;
 import org.encog.ml.data.buffer.codec.CSVDataCODEC;
@@ -50,10 +53,10 @@ public class NeuralNetwork {
 		
 		//Configure the neural network topology. 
 		BasicNetwork network = new BasicNetwork();
-		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, inputs)); //You need to figure out the activation function
-		//network.addLayer(....); //You need to figure out the number of hidden layers and their neurons
-		//network.addLayer(....);
-		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, outputs));
+		network.addLayer(new BasicLayer(null, true, inputs));
+		network.addLayer(new BasicLayer(new ActivationReLU(), true, 800));
+		network.addLayer(new BasicLayer(new ActivationReLU(), true, 400));
+		network.addLayer(new BasicLayer(new ActivationSoftMax(), false, outputs));
 		network.getStructure().finalizeStructure();
 		network.reset();
 
@@ -75,6 +78,8 @@ public class NeuralNetwork {
 			cv.iteration();
 			epoch++;
 		} while(cv.getError() > 0.01);
+
+		Encog.getInstance().shutdown();
 
 		Utilities.saveNeuralNetwork(network, "./test.nn");
 	}

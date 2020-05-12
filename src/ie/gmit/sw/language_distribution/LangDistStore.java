@@ -2,6 +2,7 @@ package ie.gmit.sw.language_distribution;
 
 import ie.gmit.sw.Lang;
 
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -37,4 +38,6 @@ public interface LangDistStore {
     default LangDist getNewDistOfSameType() {
         return getNewDistOfSameType(Lang.Unidentified);
     }
+
+    void writeToFile(String filePath) throws IOException;
 }

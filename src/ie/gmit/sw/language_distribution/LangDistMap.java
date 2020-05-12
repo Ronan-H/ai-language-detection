@@ -1,7 +1,13 @@
 package ie.gmit.sw.language_distribution;
 
 import ie.gmit.sw.Lang;
+import ie.gmit.sw.code_stubs.Utilities;
 
+import javax.rmi.CORBA.Util;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -52,5 +58,30 @@ public class LangDistMap implements LangDistStore {
     @Override
     public LangDist getNewDistOfSameType(Lang distLang) {
         return new HashedLangDist(distLang, hashRange);
+    }
+
+    @Override
+    public void writeToFile(String filePath) throws IOException {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath)));
+
+        for (Lang lang : getKeySet()) {
+            LangDist dist = getDistribution(lang);
+            // TODO dist.getFrequences() already normalizes between 0 and 1. Would that also work?
+            double[] normalizedFreqs = Utilities.normalize(dist.getFrequencies(), -1, 1);
+
+            // write hash vector values
+            for (int i = 0; i < hashRange; i++) {
+                out.print(normalizedFreqs[i]);
+                out.print(i == hashRange - 1 ? "\n" : ",");
+            }
+
+            // write language vector
+            Lang[] langs = Lang.values();
+            for (int i = 0; i < langs.length; i++) {
+                Lang l = langs[i];
+                out.print(l == lang ? "1" : "0");
+                out.print(i == langs.length - 1 ? "\n" : ",");
+            }
+        }
     }
 }

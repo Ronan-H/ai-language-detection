@@ -8,6 +8,7 @@ import ie.gmit.sw.language_distribution.LangDistStoreBuilder;
 import ie.gmit.sw.sample_parser.FileSampleParser;
 
 import java.io.File;
+import java.io.IOException;
 
 public class TestLangDetector {
     public static void main(String[] args) throws InterruptedException {
@@ -27,6 +28,12 @@ public class TestLangDetector {
 
         // switch strategy
         langDetector.switchToStrategy("Cosine distance");
+
+        try {
+            distStore.writeToFile("./training-data.csv");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         String result = langDetectionSystem.findClosestLanguage(
                 "0",
