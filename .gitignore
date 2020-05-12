@@ -76,5 +76,5 @@ servlet-api.jar
 *.class
 
 # training data/model files
-test.nn
+neural-network.nn
 training-data.csv

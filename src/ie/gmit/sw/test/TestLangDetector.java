@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class TestLangDetector {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         File wili = new File("./wili-2018-Small-11750-Edited.txt");
 
         // build k-mer distribution for all languages from language dataset
@@ -29,16 +29,18 @@ public class TestLangDetector {
         // switch strategy
         langDetector.switchToStrategy("Cosine distance");
 
+        String result = langDetectionSystem.findClosestLanguage(
+                "0",
+                "One of the limiting features of multi-layer perceptron is that the number of input neurons is fixed, causing issues when dealing with variable-length input sources such as text."
+        ).getLanguageName();
+        System.out.printf("Result: %s%n%n", result);
+
+        System.out.println("Writing training data to a file...");
         try {
             distStore.writeToFile("./training-data.csv");
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        String result = langDetectionSystem.findClosestLanguage(
-                "0",
-                "One of the limiting features of multi-layer perceptron is that the number of input neurons is fixed, causing issues when dealing with variable-length input sources such as text."
-        ).getLanguageName();
-        System.out.println("Result: " + result);
+        System.out.println("Finished. Exiting...");
     }
 }
