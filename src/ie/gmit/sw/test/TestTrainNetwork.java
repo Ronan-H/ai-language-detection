@@ -11,20 +11,23 @@ import org.encog.ml.data.buffer.codec.CSVDataCODEC;
 import org.encog.ml.data.buffer.codec.DataSetCODEC;
 import org.encog.ml.data.folded.FoldedDataSet;
 import org.encog.ml.train.MLTrain;
+import org.encog.neural.error.ErrorFunction;
+import org.encog.neural.error.LinearErrorFunction;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.cross.CrossValidationKFold;
 import org.encog.neural.networks.training.propagation.back.Backpropagation;
+import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 import org.encog.util.csv.CSVFormat;
 
 import java.io.File;
 
 public class TestTrainNetwork {
     public static void main(String[] args) {
-        int epochs = 50;
+        int epochs = 20;
 
-        int inputs = TestAIClassification.HASH_RANGE; //Change this to the number of input neurons
-        int outputs = Lang.values().length - 1; //Change this to the number of output neurons
+        int inputs = TestAIClassification.HASH_RANGE;
+        int outputs = Lang.values().length - 1;
 
         System.out.println("Building the neural network...\n");
 
@@ -32,7 +35,7 @@ public class TestTrainNetwork {
         BasicNetwork network = new BasicNetwork();
         network.addLayer(new BasicLayer(null, true, inputs));
         network.addLayer(new BasicLayer(new ActivationReLU(), true, 512));
-        network.addLayer(new BasicLayer(new ActivationReLU(), true, 128));
+        network.addLayer(new BasicLayer(new ActivationReLU(), true, 512));
         network.addLayer(new BasicLayer(new ActivationSoftMax(), false, outputs));
 
         network.getStructure().finalizeStructure();
@@ -40,12 +43,19 @@ public class TestTrainNetwork {
 
         System.out.println("== Training ==");
         //Read the CSV file "data.csv" into memory. Encog expects your CSV file to have input + output number of columns.
-        DataSetCODEC dsc = new CSVDataCODEC(new File("training-data.csv"), CSVFormat.ENGLISH, false, inputs, outputs, false);
+        DataSetCODEC dsc = new CSVDataCODEC(
+                new File("training-data.csv"),
+                CSVFormat.DECIMAL_POINT,
+                false,
+                inputs,
+                outputs,
+                false
+        );
         MemoryDataLoader mdl = new MemoryDataLoader(dsc);
         MLDataSet trainingSet = mdl.external2Memory();
 
         FoldedDataSet folded = new FoldedDataSet(trainingSet);
-        MLTrain train = new Backpropagation(network, folded);
+        MLTrain train = new ResilientPropagation(network, folded);
         CrossValidationKFold cv = new CrossValidationKFold(train, 5);
 
         //Train the neural network
