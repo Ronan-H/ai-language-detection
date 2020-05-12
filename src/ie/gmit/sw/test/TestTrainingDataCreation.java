@@ -43,13 +43,13 @@ public class TestTrainingDataCreation {
 
         for (HashedLangDist dist : dists) {
             // TODO dist.getFrequences() already normalizes between 0 and 1. Would that also work?
-            double[] normalizedFreqs = Utilities.normalize(dist.getFrequencies(), -1, 1);
+            //double[] normalizedFreqs = Utilities.normalize(dist.getFrequencies(), 0, 1);
+            double[] normalizedFreqs = dist.getFrequencies();
 
             // write hash vector values
             for (int i = 0; i < hashRange; i++) {
                 // truncate to 5 decimal places to save disk space
-                out.printf("%.5f", normalizedFreqs[i]);
-                out.print(i == hashRange - 1 ? "" : ",");
+                out.printf("%.5f,", normalizedFreqs[i]);
             }
 
             // write language vector

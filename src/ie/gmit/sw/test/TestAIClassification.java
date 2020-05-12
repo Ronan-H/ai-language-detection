@@ -8,8 +8,8 @@ import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
 
 public class TestAIClassification {
-    public static int HASH_RANGE = 256;
-    public static int K = 5;
+    public static int HASH_RANGE = 64;
+    public static int K = 3;
 
     public static void main(String[] args) {
         String sampleString = "this is a classification test for the network";
@@ -17,7 +17,7 @@ public class TestAIClassification {
         System.out.printf("Creating a vector hash for \"%s\"...%n", sampleString);
         HashedLangDist dist = new HashedLangDist(Lang.Unidentified, HASH_RANGE);
         dist.recordSample(sampleString, K);
-        double[] hashVector = Utilities.normalize(dist.getFrequencies(), -1, 1);
+        double[] hashVector = dist.getFrequencies();
 
         System.out.println("Loading the neural network...");
         BasicNetwork network = Utilities.loadNeuralNetwork("neural-network.nn");

@@ -50,7 +50,8 @@ public abstract class LangDist {
             numRecords++;
         }
 
-        recordSample(line, k - 1);
+        // record all k-mer length less than k
+        // recordSample(line, k - 1);
     }
 
     /**

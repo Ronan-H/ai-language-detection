@@ -14,7 +14,7 @@ import org.encog.ml.train.MLTrain;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.cross.CrossValidationKFold;
-import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
+import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import org.encog.util.csv.CSVFormat;
 
 import java.io.File;
@@ -31,9 +31,9 @@ public class TestTrainNetwork {
         //Configure the neural network topology.
         BasicNetwork network = new BasicNetwork();
         network.addLayer(new BasicLayer(null, true, inputs));
-        network.addLayer(new BasicLayer(new ActivationReLU(), true, TestAIClassification.HASH_RANGE));
-        network.addLayer(new BasicLayer(new ActivationReLU(), true, TestAIClassification.HASH_RANGE / 2));
+        network.addLayer(new BasicLayer(new ActivationReLU(), true, 128));
         network.addLayer(new BasicLayer(new ActivationSoftMax(), false, outputs));
+
         network.getStructure().finalizeStructure();
         network.reset();
 
@@ -44,7 +44,7 @@ public class TestTrainNetwork {
         MLDataSet trainingSet = mdl.external2Memory();
 
         FoldedDataSet folded = new FoldedDataSet(trainingSet);
-        MLTrain train = new ResilientPropagation(network, folded);
+        MLTrain train = new Backpropagation(network, folded);
         CrossValidationKFold cv = new CrossValidationKFold(train, 5);
 
         //Train the neural network
