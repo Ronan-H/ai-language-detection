@@ -59,4 +59,33 @@ public class LangDistMap implements LangDistStore {
     public LangDist getNewDistOfSameType(Lang distLang) {
         return new HashedLangDist(distLang, hashRange);
     }
+
+    @Override
+    public void writeToFile(String filePath) throws IOException {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath)));
+
+        // loop over all languages (this may not be in order, but that doesn't affect the training)
+        for (Lang lang : getKeySet()) {
+            LangDist dist = getDistribution(lang);
+            // TODO dist.getFrequences() already normalizes between 0 and 1. Would that also work?
+            double[] normalizedFreqs = dist.getFrequencies();
+
+            // write hash vector values
+            for (int i = 0; i < hashRange; i++) {
+                // truncate to 5 decimal places to save disk space
+                out.printf("%.5f,", normalizedFreqs[i]);
+            }
+
+            // write language vector
+            Lang[] langs = Lang.values();
+            for (int i = 0; i < langs.length; i++) {
+                Lang l = langs[i];
+                out.print(l == lang ? "1" : "0");
+                out.print(i == langs.length - 1 ? "\n" : ",");
+            }
+        }
+
+        // close the file
+        out.close();
+    }
 }

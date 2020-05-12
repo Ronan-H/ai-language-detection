@@ -3,6 +3,9 @@ package ie.gmit.sw.test;
 import ie.gmit.sw.Lang;
 import ie.gmit.sw.code_stubs.Utilities;
 import ie.gmit.sw.language_distribution.HashedLangDist;
+import ie.gmit.sw.language_distribution.LangDistStore;
+import ie.gmit.sw.language_distribution.LangDistStoreBuilder;
+import ie.gmit.sw.sample_parser.FileSampleParser;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ public class TestTrainingDataCreation {
     public static void main(String[] args) throws IOException {
         File wili = new File("./wili-2018-Small-11750-Edited.txt");
 
+        /*
         List<HashedLangDist> dists = new ArrayList<>();
         BufferedReader in = new BufferedReader(new FileReader(wili));
         String line;
@@ -27,13 +31,27 @@ public class TestTrainingDataCreation {
                 dists.add(dist);
             }
         }
+        */
 
         System.out.println("Writing training data to a file...");
+        /*
         try {
             writeToFile("./training-data.csv", dists, TestAIClassification.HASH_RANGE);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
+
+        // build k-mer distribution for all languages from language dataset
+        LangDistStore distStore = new LangDistStoreBuilder()
+                .withMappedStore(TestAIClassification.HASH_RANGE, TestAIClassification.K)
+                .registerParser(
+                        new FileSampleParser(wili)
+                )
+                .build();
+
+        distStore.writeToFile("./training-data.csv");
+
         System.out.println("Finished. Exiting...");
     }
 

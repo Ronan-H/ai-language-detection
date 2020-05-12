@@ -21,7 +21,7 @@ import java.io.File;
 
 public class TestTrainNetwork {
     public static void main(String[] args) {
-        int epochs = 10;
+        int epochs = 50;
 
         int inputs = TestAIClassification.HASH_RANGE; //Change this to the number of input neurons
         int outputs = Lang.values().length - 1; //Change this to the number of output neurons
@@ -31,6 +31,7 @@ public class TestTrainNetwork {
         //Configure the neural network topology.
         BasicNetwork network = new BasicNetwork();
         network.addLayer(new BasicLayer(null, true, inputs));
+        network.addLayer(new BasicLayer(new ActivationReLU(), true, 512));
         network.addLayer(new BasicLayer(new ActivationReLU(), true, 128));
         network.addLayer(new BasicLayer(new ActivationSoftMax(), false, outputs));
 
