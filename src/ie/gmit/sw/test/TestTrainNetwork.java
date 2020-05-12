@@ -18,7 +18,7 @@ import org.encog.util.csv.CSVFormat;
 
 import java.io.File;
 
-public class TestNeuralNetwork {
+public class TestTrainNetwork {
     public static void main(String[] args) {
         int inputs = 512; //Change this to the number of input neurons
         int outputs = 235; //Change this to the number of output neurons
@@ -30,7 +30,6 @@ public class TestNeuralNetwork {
         network.addLayer(new BasicLayer(null, true, inputs));
         network.addLayer(new BasicLayer(new ActivationReLU(), true, 512));
         network.addLayer(new BasicLayer(new ActivationReLU(), true, 512));
-        network.addLayer(new BasicLayer(new ActivationReLU(), true, 256));
         network.addLayer(new BasicLayer(new ActivationSoftMax(), false, outputs));
         network.getStructure().finalizeStructure();
         network.reset();
@@ -44,9 +43,6 @@ public class TestNeuralNetwork {
         FoldedDataSet folded = new FoldedDataSet(trainingSet);
         MLTrain train = new ResilientPropagation(network, folded);
         CrossValidationKFold cv = new CrossValidationKFold(train, 5);
-
-        //Use backpropagation training with alpha=0.1 and momentum=0.2
-        //Backpropagation trainer = new Backpropagation(network, trainingSet, 0.1, 0.2);
 
         //Train the neural network
         for (int epoch = 1; epoch <= 10; epoch++) {
