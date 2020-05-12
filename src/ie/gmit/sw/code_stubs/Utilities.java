@@ -1,4 +1,4 @@
-package ie.gmit.sw;
+package ie.gmit.sw.code_stubs;
 
 import java.io.File;
 import java.util.Arrays;
