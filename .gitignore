@@ -78,3 +78,6 @@ servlet-api.jar
 # training data/model files
 neural-network.nn
 training-data.csv
+
+# bash files
+*.sh

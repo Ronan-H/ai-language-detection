@@ -8,7 +8,7 @@ import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
 
 public class TestAIClassification {
-    public static int HASH_RANGE = 64;
+    public static int HASH_RANGE = 256;
     public static int K = 2;
 
     public static void main(String[] args) {

@@ -4,6 +4,7 @@ import ie.gmit.sw.Lang;
 import ie.gmit.sw.code_stubs.Utilities;
 import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationReLU;
+import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.engine.network.activation.ActivationSoftMax;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.buffer.MemoryDataLoader;
@@ -11,6 +12,7 @@ import org.encog.ml.data.buffer.codec.CSVDataCODEC;
 import org.encog.ml.data.buffer.codec.DataSetCODEC;
 import org.encog.ml.data.folded.FoldedDataSet;
 import org.encog.ml.train.MLTrain;
+import org.encog.neural.error.CrossEntropyErrorFunction;
 import org.encog.neural.error.ErrorFunction;
 import org.encog.neural.error.LinearErrorFunction;
 import org.encog.neural.networks.BasicNetwork;
@@ -24,9 +26,9 @@ import java.io.File;
 
 public class TestTrainNetwork {
     public static void main(String[] args) {
-        int epochs = 20;
+        int epochs = 10;
 
-        int inputs = TestAIClassification.HASH_RANGE;
+        int inputs = TestAIClassification.HASH_RANGE * TestAIClassification.K;
         int outputs = Lang.values().length - 1;
 
         System.out.println("Building the neural network...\n");
@@ -34,8 +36,9 @@ public class TestTrainNetwork {
         //Configure the neural network topology.
         BasicNetwork network = new BasicNetwork();
         network.addLayer(new BasicLayer(null, true, inputs));
-        network.addLayer(new BasicLayer(new ActivationReLU(), true, 512));
-        network.addLayer(new BasicLayer(new ActivationReLU(), true, 512));
+        //network.addLayer(new BasicLayer(new ActivationSigmoid(), true, inputs + outputs));
+        network.addLayer(new BasicLayer(new ActivationSigmoid(), true, inputs));
+        //network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 64));
         network.addLayer(new BasicLayer(new ActivationSoftMax(), false, outputs));
 
         network.getStructure().finalizeStructure();
@@ -57,6 +60,10 @@ public class TestTrainNetwork {
         FoldedDataSet folded = new FoldedDataSet(trainingSet);
         MLTrain train = new ResilientPropagation(network, folded);
         CrossValidationKFold cv = new CrossValidationKFold(train, 5);
+        ((ResilientPropagation) train).setDroupoutRate(0.2);
+        ((ResilientPropagation) train).setErrorFunction(new CrossEntropyErrorFunction());
+        //((ResilientPropagation) train).setErrorFunction(new CrossEntropyErrorFunction());
+
 
         //Train the neural network
         for (int epoch = 1; epoch <= epochs; epoch++) {
@@ -64,6 +71,8 @@ public class TestTrainNetwork {
             cv.iteration();
             System.out.println(" Error: " + cv.getError());
         }
+
+        cv.finishTraining();
 
         System.out.println("\nFinished training.");
 

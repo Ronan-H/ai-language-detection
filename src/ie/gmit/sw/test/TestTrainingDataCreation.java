@@ -15,22 +15,26 @@ public class TestTrainingDataCreation {
     public static void main(String[] args) throws IOException {
         File wili = new File("./wili-2018-Small-11750-Edited.txt");
 
+        System.out.println("Creating hash vectors from input file data...");
+
+        // -- using a hash vector for every sample --
 
         List<HashedLangDist> dists = new ArrayList<>();
         BufferedReader in = new BufferedReader(new FileReader(wili));
         String line;
-
         // read file line by line
-        System.out.println("Creating hash vectors from input file data...");
         while ((line = in.readLine()) != null) {
-            // split language sample and name
-            String[] parts = line.trim().split("@");
-            if (parts.length == 2) {
-                HashedLangDist dist = new HashedLangDist(Lang.valueOf(parts[1]), TestAIClassification.HASH_RANGE);
-                dist.recordSample(parts[0], TestAIClassification.K);
-                dists.add(dist);
+            for (int k = TestAIClassification.K; k >= 1; k--) {
+                // split language sample and name
+                String[] parts = line.trim().split("@");
+                if (parts.length == 2) {
+                    HashedLangDist dist = new HashedLangDist(Lang.valueOf(parts[1]), TestAIClassification.HASH_RANGE);
+                    dist.recordSample(parts[0].toLowerCase(), k);
+                    dists.add(dist);
+                }
             }
         }
+        in.close();
 
 
         System.out.println("Writing training data to a file...");
@@ -41,7 +45,8 @@ public class TestTrainingDataCreation {
             e.printStackTrace();
         }
 
-        /*
+        // -- using a hash vector for all samples combined --
+
         // build k-mer distribution for all languages from language dataset
         LangDistStore distStore = new LangDistStoreBuilder()
                 .withMappedStore(TestAIClassification.HASH_RANGE, TestAIClassification.K)
@@ -50,7 +55,6 @@ public class TestTrainingDataCreation {
                 )
                 .build();
         distStore.writeToFile("./training-data.csv");
-        */
 
         System.out.println("Finished. Exiting...");
     }
@@ -58,7 +62,7 @@ public class TestTrainingDataCreation {
     public static void writeToFile(String filePath, List<HashedLangDist> dists, int hashRange) throws IOException {
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath)));
 
-
+        int index = 0;
         for (HashedLangDist dist : dists) {
             // TODO dist.getFrequences() already normalizes between 0 and 1. Would that also work?
             //double[] normalizedFreqs = Utilities.normalize(dist.getFrequencies(), 0, 1);
@@ -70,12 +74,15 @@ public class TestTrainingDataCreation {
                 out.printf("%.5f,", normalizedFreqs[i]);
             }
 
-            // write language vector
-            Lang[] langs = Lang.values();
-            for (int i = 0; i < langs.length; i++) {
-                Lang l = langs[i];
-                out.print(l == dist.getLang() ? "1" : "0");
-                out.print(i == langs.length - 1 ? "\n" : ",");
+            if (++index % TestAIClassification.K == 0) {
+                // write language vector
+                Lang[] langs = Lang.values();
+                for (int i = 0; i < langs.length - 1; i++) {
+                    Lang l = langs[i];
+
+                    out.print(l == dist.getLang() ? "1" : "0");
+                    out.print(i == langs.length - 2 ? "\n" : ",");
+                }
             }
         }
 
