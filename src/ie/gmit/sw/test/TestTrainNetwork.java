@@ -7,6 +7,8 @@ import org.encog.engine.network.activation.ActivationReLU;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.engine.network.activation.ActivationSoftMax;
 import org.encog.ensemble.dropout.Dropout;
+import org.encog.ml.data.MLData;
+import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.buffer.MemoryDataLoader;
 import org.encog.ml.data.buffer.codec.CSVDataCODEC;
@@ -40,7 +42,7 @@ public class TestTrainNetwork {
         //Configure the neural network topology.
         BasicNetwork network = new BasicNetwork();
         network.addLayer(new BasicLayer(null, true, inputs, dropout));
-        network.addLayer(new BasicLayer(new ActivationReLU(), true, inputs, dropout));
+        network.addLayer(new BasicLayer(new ActivationReLU(), true, (inputs + outputs) / 2, dropout));
         network.addLayer(new BasicLayer(new ActivationSoftMax(), false, outputs));
 
         network.getStructure().finalizeStructure();

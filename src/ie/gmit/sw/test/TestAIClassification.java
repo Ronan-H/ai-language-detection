@@ -4,6 +4,7 @@ import ie.gmit.sw.Lang;
 import ie.gmit.sw.code_stubs.Utilities;
 import ie.gmit.sw.language_distribution.HashedLangDist;
 import org.encog.ml.data.MLData;
+import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
 
