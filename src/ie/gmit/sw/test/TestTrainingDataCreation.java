@@ -46,7 +46,7 @@ public class TestTrainingDataCreation {
         }
 
         // -- using a hash vector for all samples combined --
-
+        /*
         // build k-mer distribution for all languages from language dataset
         LangDistStore distStore = new LangDistStoreBuilder()
                 .withMappedStore(TestAIClassification.HASH_RANGE, TestAIClassification.K)
@@ -55,6 +55,7 @@ public class TestTrainingDataCreation {
                 )
                 .build();
         distStore.writeToFile("./training-data.csv");
+        */
 
         System.out.println("Finished. Exiting...");
     }
@@ -65,7 +66,7 @@ public class TestTrainingDataCreation {
         int index = 0;
         for (HashedLangDist dist : dists) {
             // TODO dist.getFrequences() already normalizes between 0 and 1. Would that also work?
-            //double[] normalizedFreqs = Utilities.normalize(dist.getFrequencies(), 0, 1);
+            //double[] normalizedFreqs = Utilities.normalize(dist.getFrequencies(), -1, 1);
             double[] normalizedFreqs = dist.getFrequencies();
 
             // write hash vector values

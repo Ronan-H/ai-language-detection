@@ -6,12 +6,14 @@ import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationReLU;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.engine.network.activation.ActivationSoftMax;
+import org.encog.ensemble.dropout.Dropout;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.buffer.MemoryDataLoader;
 import org.encog.ml.data.buffer.codec.CSVDataCODEC;
 import org.encog.ml.data.buffer.codec.DataSetCODEC;
 import org.encog.ml.data.folded.FoldedDataSet;
 import org.encog.ml.train.MLTrain;
+import org.encog.ml.train.strategy.HybridStrategy;
 import org.encog.neural.error.CrossEntropyErrorFunction;
 import org.encog.neural.error.ErrorFunction;
 import org.encog.neural.error.LinearErrorFunction;
@@ -26,19 +28,19 @@ import java.io.File;
 
 public class TestTrainNetwork {
     public static void main(String[] args) {
-        int epochs = 10;
+        int epochs = 15;
+        final double dropout = 0.9;
 
         int inputs = TestAIClassification.HASH_RANGE * TestAIClassification.K;
+        //int inputs = TestAIClassification.HASH_RANGE;
         int outputs = Lang.values().length - 1;
 
         System.out.println("Building the neural network...\n");
 
         //Configure the neural network topology.
         BasicNetwork network = new BasicNetwork();
-        network.addLayer(new BasicLayer(null, true, inputs));
-        //network.addLayer(new BasicLayer(new ActivationSigmoid(), true, inputs + outputs));
-        network.addLayer(new BasicLayer(new ActivationSigmoid(), true, inputs));
-        //network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 64));
+        network.addLayer(new BasicLayer(null, true, inputs, dropout));
+        network.addLayer(new BasicLayer(new ActivationReLU(), true, inputs, dropout));
         network.addLayer(new BasicLayer(new ActivationSoftMax(), false, outputs));
 
         network.getStructure().finalizeStructure();
@@ -48,7 +50,7 @@ public class TestTrainNetwork {
         //Read the CSV file "data.csv" into memory. Encog expects your CSV file to have input + output number of columns.
         DataSetCODEC dsc = new CSVDataCODEC(
                 new File("training-data.csv"),
-                CSVFormat.DECIMAL_POINT,
+                CSVFormat.ENGLISH,
                 false,
                 inputs,
                 outputs,
@@ -58,11 +60,11 @@ public class TestTrainNetwork {
         MLDataSet trainingSet = mdl.external2Memory();
 
         FoldedDataSet folded = new FoldedDataSet(trainingSet);
-        MLTrain train = new ResilientPropagation(network, folded);
+        ResilientPropagation train = new ResilientPropagation(network, folded);
+        train.setErrorFunction(new CrossEntropyErrorFunction());
+        train.setDroupoutRate(dropout);
+
         CrossValidationKFold cv = new CrossValidationKFold(train, 5);
-        ((ResilientPropagation) train).setDroupoutRate(0.2);
-        ((ResilientPropagation) train).setErrorFunction(new CrossEntropyErrorFunction());
-        //((ResilientPropagation) train).setErrorFunction(new CrossEntropyErrorFunction());
 
 
         //Train the neural network
