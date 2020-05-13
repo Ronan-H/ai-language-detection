@@ -7,6 +7,9 @@ import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TestAIClassification {
     public static int HASH_RANGE = 256;
     public static int K = 2;
@@ -15,13 +18,28 @@ public class TestAIClassification {
         String sampleString = "this is a classification test for the network";
 
         System.out.printf("Creating a vector hash for \"%s\"...%n", sampleString);
-        HashedLangDist dist = new HashedLangDist(Lang.Unidentified, HASH_RANGE);
-        dist.recordSample(sampleString, K);
-        double[] hashVector = dist.getFrequencies();
+        List<HashedLangDist> dists = new ArrayList<>();
+
+        for (int k = TestAIClassification.K; k >= 1; k--) {
+            HashedLangDist dist = new HashedLangDist(Lang.Unidentified, TestAIClassification.HASH_RANGE);
+            dist.recordSample(sampleString, k);
+            dists.add(dist);
+        }
+
+        double[] comibinedFreqs = new double[TestAIClassification.HASH_RANGE * TestAIClassification.K];
+
+        int index = 0;
+        for (HashedLangDist d : dists) {
+            double[] freqs = d.getFrequencies();
+            for (int i = 0; i < freqs.length; i++) {
+                comibinedFreqs[index++] = freqs[i];
+            }
+        }
+
 
         System.out.println("Loading the neural network...");
         BasicNetwork network = Utilities.loadNeuralNetwork("neural-network.nn");
-        MLData sample = new BasicMLData(hashVector);
+        MLData sample = new BasicMLData(comibinedFreqs);
         System.out.println("Classifying...\n");
         Lang classification = Lang.values()[network.classify(sample)];
 
