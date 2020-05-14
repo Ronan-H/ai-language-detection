@@ -4,25 +4,15 @@ import ie.gmit.sw.Lang;
 import ie.gmit.sw.code_stubs.Utilities;
 import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationReLU;
-import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.engine.network.activation.ActivationSoftMax;
-import org.encog.ensemble.dropout.Dropout;
-import org.encog.ml.data.MLData;
-import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.buffer.MemoryDataLoader;
 import org.encog.ml.data.buffer.codec.CSVDataCODEC;
 import org.encog.ml.data.buffer.codec.DataSetCODEC;
 import org.encog.ml.data.folded.FoldedDataSet;
-import org.encog.ml.train.MLTrain;
-import org.encog.ml.train.strategy.HybridStrategy;
-import org.encog.neural.error.CrossEntropyErrorFunction;
-import org.encog.neural.error.ErrorFunction;
-import org.encog.neural.error.LinearErrorFunction;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.cross.CrossValidationKFold;
-import org.encog.neural.networks.training.propagation.back.Backpropagation;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
 import org.encog.util.csv.CSVFormat;
 
@@ -30,11 +20,10 @@ import java.io.File;
 
 public class TestTrainNetwork {
     public static void main(String[] args) {
-        int epochs = 14;
+        int epochs = 10;
         final double dropout = 0.9;
 
         int inputs = TestAIClassification.HASH_RANGE * TestAIClassification.K;
-        //int inputs = TestAIClassification.HASH_RANGE;
         int outputs = Lang.values().length - 1;
 
         System.out.println("Building the neural network...\n");
@@ -44,7 +33,6 @@ public class TestTrainNetwork {
         network.addLayer(new BasicLayer(null, true, inputs, dropout));
         network.addLayer(new BasicLayer(new ActivationReLU(), true, (inputs + outputs) / 2, dropout));
         network.addLayer(new BasicLayer(new ActivationSoftMax(), false, outputs));
-
         network.getStructure().finalizeStructure();
         network.reset();
 
@@ -63,11 +51,9 @@ public class TestTrainNetwork {
 
         FoldedDataSet folded = new FoldedDataSet(trainingSet);
         ResilientPropagation train = new ResilientPropagation(network, folded);
-        train.setErrorFunction(new CrossEntropyErrorFunction());
         train.setDroupoutRate(dropout);
 
         CrossValidationKFold cv = new CrossValidationKFold(train, 5);
-
 
         //Train the neural network
         for (int epoch = 1; epoch <= epochs; epoch++) {
@@ -77,14 +63,10 @@ public class TestTrainNetwork {
         }
 
         cv.finishTraining();
-
         System.out.println("\nFinished training.");
-
         Encog.getInstance().shutdown();
-
         System.out.println("Saving the model to a file...");
         Utilities.saveNeuralNetwork(network, "./neural-network.nn");
-
         System.out.println("Finished.");
     }
 }
