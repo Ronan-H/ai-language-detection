@@ -57,7 +57,7 @@ public class HashedLangDist extends LangDist {
      */
     @Override
     public double[] getFrequencies() {
-        /*
+        /* Different type of normalization (same as Utilities.normalize(...))
         double lower = 0;
         double upper = 1;
 
@@ -79,5 +79,9 @@ public class HashedLangDist extends LangDist {
 
         return dist;
 
+    }
+
+    public int getHashRange() {
+        return hashRange;
     }
 }

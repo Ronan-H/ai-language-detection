@@ -3,6 +3,7 @@ package ie.gmit.sw.test;
 import ie.gmit.sw.Lang;
 import ie.gmit.sw.code_stubs.Utilities;
 import ie.gmit.sw.language_distribution.HashedLangDist;
+import ie.gmit.sw.language_distribution.PartitionedHashedLangDist;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.basic.BasicMLData;
@@ -16,31 +17,19 @@ public class TestAIClassification {
     public static int K = 2;
 
     public static void main(String[] args) {
-        String sampleString = "this is a classification test for the network";
+        String sampleString = "this is a classification test for the network. hopefully it will detect this as english.";
 
         System.out.printf("Creating a vector hash for \"%s\"...%n", sampleString);
-        List<HashedLangDist> dists = new ArrayList<>();
-
-        for (int k = TestAIClassification.K; k >= 1; k--) {
-            HashedLangDist dist = new HashedLangDist(Lang.Unidentified, TestAIClassification.HASH_RANGE);
-            dist.recordSample(sampleString, k);
-            dists.add(dist);
-        }
-
-        double[] comibinedFreqs = new double[TestAIClassification.HASH_RANGE * TestAIClassification.K];
-
-        int index = 0;
-        for (HashedLangDist d : dists) {
-            double[] freqs = d.getFrequencies();
-            for (int i = 0; i < freqs.length; i++) {
-                comibinedFreqs[index++] = freqs[i];
-            }
-        }
-
+        PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
+                Lang.Unidentified,
+                TestAIClassification.HASH_RANGE,
+                TestAIClassification.K
+        );
+        dist.recordSample(sampleString);
 
         System.out.println("Loading the neural network...");
         BasicNetwork network = Utilities.loadNeuralNetwork("neural-network.nn");
-        MLData sample = new BasicMLData(comibinedFreqs);
+        MLData sample = new BasicMLData(dist.getFrequencies());
         System.out.println("Classifying...\n");
         Lang classification = Lang.values()[network.classify(sample)];
 

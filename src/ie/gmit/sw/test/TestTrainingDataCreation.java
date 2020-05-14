@@ -5,6 +5,7 @@ import ie.gmit.sw.code_stubs.Utilities;
 import ie.gmit.sw.language_distribution.HashedLangDist;
 import ie.gmit.sw.language_distribution.LangDistStore;
 import ie.gmit.sw.language_distribution.LangDistStoreBuilder;
+import ie.gmit.sw.language_distribution.PartitionedHashedLangDist;
 import ie.gmit.sw.sample_parser.FileSampleParser;
 
 import java.io.*;
@@ -18,20 +19,20 @@ public class TestTrainingDataCreation {
         System.out.println("Creating hash vectors from input file data...");
 
         // -- using a hash vector for every sample --
-
-        List<HashedLangDist> dists = new ArrayList<>();
         BufferedReader in = new BufferedReader(new FileReader(wili));
+        List<HashedLangDist> dists = new ArrayList<>();
         String line;
         // read file line by line
         while ((line = in.readLine()) != null) {
-            for (int k = TestAIClassification.K; k >= 1; k--) {
-                // split language sample and name
-                String[] parts = line.trim().split("@");
-                if (parts.length == 2) {
-                    HashedLangDist dist = new HashedLangDist(Lang.valueOf(parts[1]), TestAIClassification.HASH_RANGE);
-                    dist.recordSample(parts[0].toLowerCase(), k);
-                    dists.add(dist);
-                }
+            String[] parts = line.trim().split("@");
+            if (parts.length == 2) {
+                PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
+                        Lang.valueOf(parts[1]),
+                        TestAIClassification.HASH_RANGE,
+                        TestAIClassification.K
+                );
+                dist.recordSample(parts[0].toLowerCase());
+                dists.add(dist);
             }
         }
         in.close();
@@ -63,27 +64,22 @@ public class TestTrainingDataCreation {
     public static void writeToFile(String filePath, List<HashedLangDist> dists, int hashRange) throws IOException {
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath)));
 
-        int index = 0;
         for (HashedLangDist dist : dists) {
-            // TODO dist.getFrequences() already normalizes between 0 and 1. Would that also work?
-            //double[] normalizedFreqs = Utilities.normalize(dist.getFrequencies(), -1, 1);
             double[] normalizedFreqs = dist.getFrequencies();
 
             // write hash vector values
-            for (int i = 0; i < hashRange; i++) {
+            for (int i = 0; i < normalizedFreqs.length; i++) {
                 // truncate to 5 decimal places to save disk space
                 out.printf("%.5f,", normalizedFreqs[i]);
             }
 
-            if (++index % TestAIClassification.K == 0) {
-                // write language vector
-                Lang[] langs = Lang.values();
-                for (int i = 0; i < langs.length - 1; i++) {
-                    Lang l = langs[i];
+            // write language vector
+            Lang[] langs = Lang.values();
+            for (int i = 0; i < langs.length - 1; i++) {
+                Lang l = langs[i];
 
-                    out.print(l == dist.getLang() ? "1" : "0");
-                    out.print(i == langs.length - 2 ? "\n" : ",");
-                }
+                out.print(l == dist.getLang() ? "1" : "0");
+                out.print(i == langs.length - 2 ? "\n" : ",");
             }
         }
 
