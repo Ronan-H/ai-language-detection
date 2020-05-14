@@ -28,6 +28,6 @@ public class CosineDistanceStrategy extends FreqDistanceStrategy {
         }
 
         double cosineSimilarity = (prodSum / (Math.sqrt(aSum) * Math.sqrt(bSum)));
-        return 1 - cosineSimilarity;
+        return cosineSimilarity;
     }
 }

@@ -45,7 +45,7 @@ public class HashedLangDist extends LangDist {
         // record k-mer
         freqs[index]++;
         // record the 1st character of the k-mer too, to help detect languages with large alphabets (eg. Chinese)
-        //freqs[kmer[0] % hashRange]++;
+        freqs[kmer[0] % hashRange]++;
     }
 
     /**
