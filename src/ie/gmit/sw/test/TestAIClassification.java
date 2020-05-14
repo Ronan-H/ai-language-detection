@@ -2,15 +2,10 @@ package ie.gmit.sw.test;
 
 import ie.gmit.sw.Lang;
 import ie.gmit.sw.code_stubs.Utilities;
-import ie.gmit.sw.language_distribution.HashedLangDist;
 import ie.gmit.sw.language_distribution.PartitionedHashedLangDist;
 import org.encog.ml.data.MLData;
-import org.encog.ml.data.MLDataPair;
 import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestAIClassification {
     public static int HASH_RANGE = 256;
@@ -22,8 +17,8 @@ public class TestAIClassification {
         System.out.printf("Creating a vector hash for \"%s\"...%n", sampleString);
         PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
                 Lang.Unidentified,
-                TestAIClassification.HASH_RANGE,
-                TestAIClassification.K
+                HASH_RANGE,
+                K
         );
         dist.recordSample(sampleString);
 
