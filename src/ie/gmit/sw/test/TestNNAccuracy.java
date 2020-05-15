@@ -2,7 +2,6 @@ package ie.gmit.sw.test;
 
 import ie.gmit.sw.Lang;
 import ie.gmit.sw.code_stubs.Utilities;
-import ie.gmit.sw.language_distribution.HashedLangDist;
 import ie.gmit.sw.language_distribution.PartitionedHashedLangDist;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
@@ -28,23 +27,24 @@ public class TestNNAccuracy {
         int correct = 0;
         // read file line by line
         while ((line = in.readLine()) != null) {
-            String[] parts = line.trim().split("@");
-            if (parts.length == 2) {
-                PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
-                        Lang.Unidentified,
-                        TestAIClassification.HASH_RANGE,
-                        TestAIClassification.K
-                );
-                dist.recordSample(parts[0].toLowerCase());
-                MLData sample = new BasicMLData(dist.getFrequencies());
-                Lang classification = Lang.values()[network.classify(sample)];
+            line = line.trim();
+            int atPos = line.lastIndexOf("@");
+            Lang lang = Lang.valueOf(line.substring(atPos + 1));
 
-                if (classification == Lang.valueOf(parts[1])) {
-                    correct++;
-                }
+            PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
+                    Lang.Unidentified,
+                    TestAIClassification.HASH_RANGE,
+                    TestAIClassification.K
+            );
+            dist.recordSample(line);
+            MLData sample = new BasicMLData(dist.getFrequencies());
+            Lang classification = Lang.values()[network.classify(sample)];
 
-                total++;
+            if (classification == lang) {
+                correct++;
             }
+
+            total++;
         }
         in.close();
 

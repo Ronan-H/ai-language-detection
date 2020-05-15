@@ -20,7 +20,7 @@ import java.io.File;
 
 public class TestTrainNetwork {
     public static void main(String[] args) {
-        int epochs = 10;
+        int epochs = 25;
         final double dropout = 0.9;
 
         int inputs = TestAIClassification.HASH_RANGE * TestAIClassification.K;

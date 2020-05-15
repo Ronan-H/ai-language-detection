@@ -5,8 +5,7 @@ import ie.gmit.sw.language_distribution.HashedLangDist;
 import ie.gmit.sw.language_distribution.PartitionedHashedLangDist;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class TestTrainingDataCreation {
     public static void main(String[] args) throws IOException {
@@ -14,22 +13,35 @@ public class TestTrainingDataCreation {
 
         System.out.println("Creating hash vectors from input file data...");
 
+        int limit = Integer.MAX_VALUE;
+        Map<Lang, Integer> sampleCounts = new HashMap<>();
+        Arrays.stream(Lang.values()).forEach(l -> sampleCounts.put(l, 0));
+
         // -- using a hash vector for every sample --
         BufferedReader in = new BufferedReader(new FileReader(wili));
-        List<HashedLangDist> dists = new ArrayList<>();
+        List<PartitionedHashedLangDist> dists = new ArrayList<>();
         String line;
         // read file line by line
         while ((line = in.readLine()) != null) {
-            String[] parts = line.trim().split("@");
-            if (parts.length == 2) {
-                PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
-                        Lang.valueOf(parts[1]),
-                        TestAIClassification.HASH_RANGE,
-                        TestAIClassification.K
-                );
-                dist.recordSample(parts[0].toLowerCase());
-                dists.add(dist);
+            line = line.trim();
+            int atPos = line.lastIndexOf("@");
+            Lang lang = Lang.valueOf(line.substring(atPos + 1));
+
+            if (sampleCounts.get(lang) >= limit) {
+                continue;
             }
+
+            String sample = line.substring(0, atPos).toLowerCase();
+
+            PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
+                    lang,
+                    TestAIClassification.HASH_RANGE,
+                    TestAIClassification.K
+            );
+            dist.recordSample(sample);
+            dists.add(dist);
+
+            sampleCounts.put(lang, sampleCounts.get(lang) + 1);
         }
         in.close();
 
@@ -57,7 +69,7 @@ public class TestTrainingDataCreation {
         System.out.println("Finished. Exiting...");
     }
 
-    public static void writeToFile(String filePath, List<HashedLangDist> dists, int hashRange) throws IOException {
+    public static void writeToFile(String filePath, List<PartitionedHashedLangDist> dists, int hashRange) throws IOException {
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath)));
 
         for (HashedLangDist dist : dists) {
