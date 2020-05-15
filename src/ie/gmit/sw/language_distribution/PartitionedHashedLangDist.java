@@ -18,16 +18,14 @@ public class PartitionedHashedLangDist extends HashedLangDist {
 
     public void recordSample(String line) {
         for (int i = 0; i < numPartitions; i++) {
-            partitions[i].recordSample(line, numPartitions);
+            recordSample(line, i);
         }
     }
 
 
     @Override
     public void recordSample(String line, int k) {
-        for (int i = 0; i < numPartitions; i++) {
-            partitions[i].recordSample(line, k - i);
-        }
+        partitions[k].recordSample(line, k + 1);
     }
 
     @Override
@@ -37,9 +35,7 @@ public class PartitionedHashedLangDist extends HashedLangDist {
         for (int i = 0; i < numPartitions; i++) {
             double[] pFreqs = partitions[i].getFrequencies();
 
-            for (int j = 0; j < pFreqs.length; j++) {
-                combined[(i * getHashRange()) + j] = pFreqs[j];
-            }
+            System.arraycopy(pFreqs, 0, combined, i * getHashRange(), pFreqs.length);
         }
 
         return combined;

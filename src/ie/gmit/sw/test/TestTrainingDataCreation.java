@@ -54,18 +54,6 @@ public class TestTrainingDataCreation {
             e.printStackTrace();
         }
 
-        // -- using a hash vector for all samples combined --
-        /*
-        // build k-mer distribution for all languages from language dataset
-        LangDistStore distStore = new LangDistStoreBuilder()
-                .withMappedStore(TestAIClassification.HASH_RANGE, TestAIClassification.K)
-                .registerParser(
-                        new FileSampleParser(wili)
-                )
-                .build();
-        distStore.writeToFile("./training-data.csv");
-        */
-
         System.out.println("Finished. Exiting...");
     }
 
@@ -76,9 +64,9 @@ public class TestTrainingDataCreation {
             double[] normalizedFreqs = dist.getFrequencies();
 
             // write hash vector values
-            for (int i = 0; i < normalizedFreqs.length; i++) {
+            for (double normalizedFreq : normalizedFreqs) {
                 // truncate to 5 decimal places to save disk space
-                out.printf("%.5f,", normalizedFreqs[i]);
+                out.printf("%.5f,", normalizedFreq);
             }
 
             // write language vector

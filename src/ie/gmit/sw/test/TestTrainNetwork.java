@@ -10,6 +10,7 @@ import org.encog.ml.data.buffer.MemoryDataLoader;
 import org.encog.ml.data.buffer.codec.CSVDataCODEC;
 import org.encog.ml.data.buffer.codec.DataSetCODEC;
 import org.encog.ml.data.folded.FoldedDataSet;
+import org.encog.neural.error.CrossEntropyErrorFunction;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.cross.CrossValidationKFold;
@@ -20,7 +21,7 @@ import java.io.File;
 
 public class TestTrainNetwork {
     public static void main(String[] args) {
-        int epochs = 25;
+        int epochs = 14;
         final double dropout = 0.9;
 
         int inputs = TestAIClassification.HASH_RANGE * TestAIClassification.K;
@@ -52,6 +53,7 @@ public class TestTrainNetwork {
         FoldedDataSet folded = new FoldedDataSet(trainingSet);
         ResilientPropagation train = new ResilientPropagation(network, folded);
         train.setDroupoutRate(dropout);
+        train.setErrorFunction(new CrossEntropyErrorFunction());
 
         CrossValidationKFold cv = new CrossValidationKFold(train, 5);
 
