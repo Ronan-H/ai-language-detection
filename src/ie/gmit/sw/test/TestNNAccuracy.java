@@ -20,7 +20,6 @@ public class TestNNAccuracy {
         BasicNetwork network = Utilities.loadNeuralNetwork("neural-network.nn");
         System.out.println("Testing accuracy...");
 
-        // -- using a hash vector for every sample --
         BufferedReader in = new BufferedReader(new FileReader(wili));
         String line;
         int total = 0;
