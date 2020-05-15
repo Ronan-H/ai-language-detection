@@ -17,9 +17,18 @@ public class TestTrainingDataCreation {
         Map<Lang, Integer> sampleCounts = new HashMap<>();
         Arrays.stream(Lang.values()).forEach(l -> sampleCounts.put(l, 0));
 
+        Map<Lang, PartitionedHashedLangDist> distMap = new HashMap<>();
+        Arrays.stream(Lang.values()).forEach(
+                l -> distMap.put(l, new PartitionedHashedLangDist(
+                        l,
+                        TestAIClassification.HASH_RANGE,
+                        TestAIClassification.K
+                ))
+        );
+
         // -- using a hash vector for every sample --
         BufferedReader in = new BufferedReader(new FileReader(wili));
-        List<PartitionedHashedLangDist> dists = new ArrayList<>();
+        List<double[]> dists = new ArrayList<>();
         String line;
         // read file line by line
         while ((line = in.readLine()) != null) {
@@ -27,19 +36,15 @@ public class TestTrainingDataCreation {
             int atPos = line.lastIndexOf("@");
             Lang lang = Lang.valueOf(line.substring(atPos + 1));
 
+            PartitionedHashedLangDist dist = distMap.get(lang);
+
             if (sampleCounts.get(lang) >= limit) {
                 continue;
             }
 
             String sample = line.substring(0, atPos).toLowerCase();
-
-            PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
-                    lang,
-                    TestAIClassification.HASH_RANGE,
-                    TestAIClassification.K
-            );
             dist.recordSample(sample);
-            dists.add(dist);
+            dists.add(dist.getFrequencies());
 
             sampleCounts.put(lang, sampleCounts.get(lang) + 1);
         }
@@ -57,26 +62,17 @@ public class TestTrainingDataCreation {
         System.out.println("Finished. Exiting...");
     }
 
-    public static void writeToFile(String filePath, List<PartitionedHashedLangDist> dists, int hashRange) throws IOException {
+    public static void writeToFile(String filePath, List<double[]> dists, int hashRange) throws IOException {
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath)));
 
-        for (HashedLangDist dist : dists) {
-            double[] normalizedFreqs = dist.getFrequencies();
-
+        for (double[] values : dists) {
             // write hash vector values
-            for (double normalizedFreq : normalizedFreqs) {
+            for (int i = 0; i < values.length; i++) {
                 // truncate to 5 decimal places to save disk space
-                out.printf("%.5f,", normalizedFreq);
+                out.printf("%.5f", values[i]);
+                if (i != values.length - 1) out.print(",");
             }
-
-            // write language vector
-            Lang[] langs = Lang.values();
-            for (int i = 0; i < langs.length - 1; i++) {
-                Lang l = langs[i];
-
-                out.print(l == dist.getLang() ? "1" : "0");
-                out.print(i == langs.length - 2 ? "\n" : ",");
-            }
+            out.println();
         }
 
         // close the file

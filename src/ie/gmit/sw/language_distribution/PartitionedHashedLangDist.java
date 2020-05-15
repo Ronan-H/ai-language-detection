@@ -30,12 +30,21 @@ public class PartitionedHashedLangDist extends HashedLangDist {
 
     @Override
     public double[] getFrequencies() {
-        double[] combined = new double[getHashRange() * numPartitions];
+        double[] combined = new double[getHashRange() * numPartitions + (Lang.values().length - 1)];
 
         for (int i = 0; i < numPartitions; i++) {
             double[] pFreqs = partitions[i].getFrequencies();
 
             System.arraycopy(pFreqs, 0, combined, i * getHashRange(), pFreqs.length);
+        }
+
+        // write language vector
+        Lang[] langs = Lang.values();
+        for (int i = 0; i < langs.length - 1; i++) {
+            Lang l = langs[i];
+            int index = (getHashRange() * numPartitions) + i;
+
+            combined[index] = (l == getLang() ? 1 : 0);
         }
 
         return combined;
