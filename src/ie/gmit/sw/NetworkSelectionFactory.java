@@ -1,14 +1,11 @@
 package ie.gmit.sw;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class NetworkSelectionFactory {
-    private NetworkSelectionFactory instance;
+    private static NetworkSelectionFactory instance;
 
     private NetworkSelectionFactory() {}
 
-    public NetworkSelectionFactory getInstance() {
+    public static NetworkSelectionFactory getInstance() {
         if (instance == null) {
             instance = new NetworkSelectionFactory();
         }
@@ -21,15 +18,19 @@ public class NetworkSelectionFactory {
 
         networkSelection.addSelection("vectorSize",
                 new Selection<>(
-                "Choose the size of the vector to use for feature hashing. A value too low will introduce too many collisions, and a value too high will overwhelm the network with input data.",
-                new Integer[] {128, 256, 512},
-                256
+                "N-gram feature vector size",
+                        "This decides the fixed space that n-gram frequency data will have to be \"squashed\" into.",
+                        "A value too low could introduce too many collisions, while a value too high could overwhelm the network with input data.",
+                        new Integer[] {128, 256, 512},
+                        256
                 )
         );
 
         networkSelection.addSelection("ngramLength",
                 new Selection<>(
-                        "Choose the max length of n-gram to use for feature hashing. All n-gram lengths up to n will be used as input.",
+                        "N-gram max length",
+                        "This is the size of the \"window\" that is passed over the input data, in characters.\n\tAll n-gram lengths up to n will be used as input (I.e. selecting 2 will store n-grams of size 1 AND 2 as input).",
+                        "A value too low might not provide the network with enough information, while a value too high could overwhelm the network with input data.",
                         new Integer[] {1, 2, 3},
                         2
                 )
@@ -37,7 +38,9 @@ public class NetworkSelectionFactory {
 
         networkSelection.addSelection("sampleLimit",
                 new Selection<>(
-                        "Choose a limit on the number of samples to use for each language. Limiting samples may help give each language a more equal representation, since some languages have more samples than others.",
+                        "Language data sample limit",
+                        "Since some languages have more samples than others, limiting samples may help give each language a more equal representation.",
+                        "Limiting the samples too much may not provide the network with enough data to make good predictions.",
                         new Integer[] {30, 40, 50, 999},
                         999
                 )
@@ -45,7 +48,9 @@ public class NetworkSelectionFactory {
 
         networkSelection.addSelection("numEpochs",
                 new Selection<>(
-                        "Choose the number of epochs to train for. Too few epochs won't give the neural net enough training, while too many will cause overfitting.",
+                        "Number of epochs to run",
+                        "One \"epoch\" means on full pass over the data during training.",
+                        "Running for too few epochs won't give the neural net enough training, while running for too many could cause overfitting.",
                         new Integer[] {10, 15, 20, 25},
                         15
                 )
@@ -53,7 +58,9 @@ public class NetworkSelectionFactory {
 
         networkSelection.addSelection("dropout",
                 new Selection<>(
-                        "Choose the amount of dropout to use between each layer. A higher dropout value could help prevent overfitting.",
+                        "Dropout proportion",
+                        "\"Dropout\" causes the network to ignore random neurons during training.",
+                        "A higher dropout value could help prevent overfitting. Too much dropout, however, could deprive the network of enough data to make good predictions.",
                         new Double[] {0.0, 0.25, 0.5, 0.75, 0.9},
                         0.9
                 )
@@ -61,7 +68,9 @@ public class NetworkSelectionFactory {
 
         networkSelection.addSelection("hiddenSize",
                 new Selection<>(
-                        "Choose a formula to use to compute the number of neurons to use in the hidden layer. Too few neurons may not provide the network with enough resources to make good predictions, while using too many might now allow the network to be trained fully with the limited data.",
+                        "Hidden layer size formula (in neurons)",
+                        "Hidden layers are the layers between the input and output layer in a feedforward neural network.\n\tFor this network, I have found that using more than one layer is not practical, so only one hidden layer will be used.",
+                        "Too few neurons may not provide the network with enough resources to make good predictions, while using too many might now allow the network to be trained fully with the limited data.",
                         new String[] {
                                 "input + output",
                                 "(input + output) / 2",
