@@ -9,7 +9,7 @@ public class NetworkSelection {
     private Map<String, Selection> selectionMap;
     private Scanner console;
 
-    public NetworkSelection() {
+    protected NetworkSelection() {
         selections = new ArrayList<>();
         selectionMap = new HashMap<>();
         console = new Scanner(System.in);
@@ -25,7 +25,7 @@ public class NetworkSelection {
         out.printf("OPTION: %s%n", selection.getPrompt());
         out.printf("EXPLANATION: %s%n", selection.getExplanation());
         out.printf("GUIDANCE: %s%n", selection.getGuidance());
-        out.printf("RECOMMENDED: %s%n", selection.getGuidance());
+        out.printf("RECOMMENDED: %s%n", selection.getBest());
         int choiceIndex = getUserOption(selection.getOptionLabels()) - 1;
         selection.choose(choiceIndex);
     }
@@ -98,6 +98,7 @@ public class NetworkSelection {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
+        sb.append("Neural network configuration:\n");
         for (Selection selection : selections) {
             sb.append(selection.toString());
         }

@@ -51,8 +51,8 @@ public class NetworkSelectionFactory {
                         "Number of epochs to run",
                         "One \"epoch\" means on full pass over the data during training.",
                         "Running for too few epochs won't give the neural net enough training, while running for too many could cause overfitting.",
-                        new Integer[] {10, 15, 20, 25},
-                        15
+                        new Integer[] {10, 13, 15, 20},
+                        13
                 )
         );
 
@@ -68,16 +68,16 @@ public class NetworkSelectionFactory {
 
         networkSelection.addSelection("hiddenSize",
                 new Selection<>(
-                        "Hidden layer size formula (in neurons)",
+                        "Hidden layer size formula",
                         "Hidden layers are the layers between the input and output layer in a feedforward neural network.\n\tFor this network, I have found that using more than one layer is not practical, so only one hidden layer will be used.",
                         "Too few neurons may not provide the network with enough resources to make good predictions, while using too many might now allow the network to be trained fully with the limited data.",
                         new String[] {
                                 "input + output",
                                 "(input + output) / 2",
-                                "(input * 0.66) + out",
+                                "(input * 0.66) + output",
                                 "sqrt(input * output)"
                         },
-                        "input + output"
+                        "(input + output) / 2"
                 )
         );
 

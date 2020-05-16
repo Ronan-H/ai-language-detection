@@ -1,10 +1,16 @@
 package ie.gmit.sw;
 
 
+import java.io.IOException;
+
 import static java.lang.System.out;
 
 public class Menu {
-    public void go() {
+    public void go() throws IOException {
+        String samplesPath = "./wili-2018-Small-11750-Edited.txt";
+        String trainingDataPath = "./training-data.csv";
+        String nnPath = "./neural-network.nn";
+
         // print the program header
         out.println();
         out.println(" =================================");
@@ -28,7 +34,22 @@ public class Menu {
             networkSelection.getUserSelectionForAll();
         }
 
-        out.println("Neural network configuration:");
         out.println(networkSelection.toString());
+
+        // create data set using chosen parameters
+        new TrainingDataCreator(
+                networkSelection,
+                samplesPath,
+                trainingDataPath
+        ).create();
+
+        // train network using user parameters
+        new NetworkTrainer(
+                networkSelection,
+                "./neural-network.nn"
+        ).train();
+
+        // test accuracy/sensitivity/specificity
+        new NetworkValidation(samplesPath, nnPath).testAccuracy();
     }
 }
