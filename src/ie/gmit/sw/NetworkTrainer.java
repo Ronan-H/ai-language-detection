@@ -88,7 +88,7 @@ public class NetworkTrainer {
         Encog.getInstance().shutdown();
         System.out.printf("Saving the model to file: %s%n", savePath.getName());
         Utilities.saveNeuralNetwork(network, savePath.getPath());
-        System.out.println("Finished training the model.");
+        System.out.println("Finished training the model.\n");
     }
 
     private int computeHiddenLayerSize() {

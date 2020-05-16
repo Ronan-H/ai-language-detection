@@ -12,7 +12,7 @@ public class NetworkSelection {
     protected NetworkSelection() {
         selections = new ArrayList<>();
         selectionMap = new HashMap<>();
-        console = new Scanner(System.in);
+        console = UserInput.getScanner();
     }
 
     public void getUserSelectionForAll() {

@@ -50,6 +50,11 @@ public class Menu {
         ).train();
 
         // test accuracy/sensitivity/specificity
-        new NetworkValidation(samplesPath, nnPath).testAccuracy();
+        new NetworkValidation(networkSelection, samplesPath, nnPath).testAccuracy();
+
+        // allow the user to specify their own language sample as input, from a file
+        new NetworkPrediction(networkSelection, nnPath).allowUserInputPredictions();
+
+        System.out.println("\nFinished. Exiting...\n");
     }
 }

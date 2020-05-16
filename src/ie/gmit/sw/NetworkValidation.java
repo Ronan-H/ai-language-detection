@@ -13,16 +13,23 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class NetworkValidation {
+    private NetworkSelection networkSelection;
     private File samplesPath;
     private File nnPath;
 
-    public NetworkValidation(String samplesPath, String nnPath) {
+    public NetworkValidation(NetworkSelection networkSelection, String samplesPath, String nnPath) {
+        this.networkSelection = networkSelection;
         this.samplesPath = new File(samplesPath);
         this.nnPath = new File(nnPath);
     }
 
     public void testAccuracy() throws IOException {
         System.out.println("== Accuracy Test ==");
+
+        System.out.println("Loading parameters...");
+        int vectorSize = (Integer) networkSelection.getSelectionChoice("vectorSize");
+        int ngramLength = (Integer) networkSelection.getSelectionChoice("ngramLength");
+
         System.out.printf("Loading the nerual network from file: %s%n", nnPath.getName());
         BasicNetwork network = Utilities.loadNeuralNetwork("neural-network.nn");
         System.out.println("Testing accuracy...\n");
@@ -39,8 +46,8 @@ public class NetworkValidation {
 
             PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
                     Lang.Unidentified,
-                    TestAIClassification.HASH_RANGE,
-                    TestAIClassification.K
+                    vectorSize,
+                    ngramLength
             );
             dist.recordSample(line);
             MLData sample = new BasicMLData(dist.getFrequencies());
@@ -59,5 +66,7 @@ public class NetworkValidation {
         System.out.printf("\tCorrect predictions: %d%n", correct);
         System.out.printf("\tTotal samples tested: %d%n", total);
         System.out.printf("\tAccuracy: %.2f%%%n%n", accuracy);
+
+        // TODO confusion matrix for each fold (requirement in spec)
     }
 }
