@@ -11,6 +11,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NetworkValidation {
     private NetworkSelection networkSelection;
@@ -38,6 +41,13 @@ public class NetworkValidation {
         String line;
         int total = 0;
         int correct = 0;
+
+        Map<Lang, LangStats> langStats = new HashMap<>();
+        for (int i = 0; i < Lang.values().length - 1; i++) {
+            Lang l = Lang.values()[i];
+            langStats.put(l, new LangStats(l));
+        }
+
         // read file line by line
         while ((line = in.readLine()) != null) {
             line = line.trim();
@@ -55,6 +65,10 @@ public class NetworkValidation {
 
             if (classification == lang) {
                 correct++;
+                langStats.get(lang).recordTruePositive();
+            }
+            else {
+                langStats.get(lang).recordFalePositive();
             }
 
             total++;
@@ -67,6 +81,12 @@ public class NetworkValidation {
         System.out.printf("\tTotal samples tested: %d%n", total);
         System.out.printf("\tAccuracy: %.2f%%%n%n", accuracy);
 
-        // TODO confusion matrix for each fold (requirement in spec)
+        LangStats[] sortedStats = langStats.values().toArray(new LangStats[0]);
+        Arrays.sort(sortedStats);
+
+        System.out.println("Prediction precision breakdown:");
+        for (LangStats stats : sortedStats) {
+            System.out.println(stats);
+        }
     }
 }
