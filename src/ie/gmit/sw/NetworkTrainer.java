@@ -5,6 +5,7 @@ import ie.gmit.sw.test.TestAIClassification;
 import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationReLU;
 import org.encog.engine.network.activation.ActivationSoftMax;
+import org.encog.engine.network.activation.ActivationTANH;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.buffer.MemoryDataLoader;
 import org.encog.ml.data.buffer.codec.CSVDataCODEC;
@@ -50,8 +51,8 @@ public class NetworkTrainer {
         //Configure the neural network topology.
         BasicNetwork network = new BasicNetwork();
         network.addLayer(new BasicLayer(null, true, numInputs, dropout));
-        network.addLayer(new BasicLayer(new ActivationReLU(), true, hiddenSize, dropout));
-        network.addLayer(new BasicLayer(new ActivationSoftMax(), false, numOutputs));
+        network.addLayer(new BasicLayer(new ActivationTANH(), true, hiddenSize, dropout));
+        network.addLayer(new BasicLayer(new ActivationSoftMax(), false, numOutputs, dropout));
         network.getStructure().finalizeStructure();
         network.reset();
 

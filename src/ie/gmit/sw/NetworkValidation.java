@@ -2,7 +2,6 @@ package ie.gmit.sw;
 
 import ie.gmit.sw.code_stubs.Utilities;
 import ie.gmit.sw.language_distribution.PartitionedHashedLangDist;
-import ie.gmit.sw.test.TestAIClassification;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
@@ -27,15 +26,14 @@ public class NetworkValidation {
     }
 
     public void testAccuracy() throws IOException {
-        System.out.println("== Accuracy Test ==");
-
+        System.out.println("== Validation ==");
         System.out.println("Loading parameters...");
         int vectorSize = (Integer) networkSelection.getSelectionChoice("vectorSize");
         int ngramLength = (Integer) networkSelection.getSelectionChoice("ngramLength");
 
         System.out.printf("Loading the nerual network from file: %s%n", nnPath.getName());
         BasicNetwork network = Utilities.loadNeuralNetwork("neural-network.nn");
-        System.out.println("Testing accuracy...\n");
+        System.out.println("Generating validation statistics...\n");
 
         BufferedReader in = new BufferedReader(new FileReader(samplesPath));
         String line;
@@ -76,17 +74,16 @@ public class NetworkValidation {
         in.close();
 
         double accuracy = (correct / (double) total) * 100.0;
-        System.out.println("Finished");
-        System.out.printf("\tCorrect predictions: %d%n", correct);
-        System.out.printf("\tTotal samples tested: %d%n", total);
-        System.out.printf("\tAccuracy: %.2f%%%n%n", accuracy);
 
         LangStats[] sortedStats = langStats.values().toArray(new LangStats[0]);
         Arrays.sort(sortedStats);
-
         System.out.println("Prediction precision breakdown:");
         for (LangStats stats : sortedStats) {
             System.out.println(stats);
         }
+
+        System.out.printf("\n\tCorrect predictions: %d%n", correct);
+        System.out.printf("\tTotal samples tested: %d%n", total);
+        System.out.printf("\tAccuracy: %.2f%%%n%n", accuracy);
     }
 }

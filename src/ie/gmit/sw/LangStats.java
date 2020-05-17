@@ -31,7 +31,7 @@ public class LangStats implements Comparable<LangStats> {
 
     @Override
     public String toString() {
-        return String.format("%27s precision: %7.2f%% - TP: %3d, FP: %3d",
+        return String.format("%25s precision: %7.2f%% - TP: %3d, FP: %3d",
                 lang.getLanguageName(),
                 getPrecision() * 100,
                 tp, fp);
