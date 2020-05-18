@@ -1,9 +1,6 @@
 package ie.gmit.sw.language_distribution;
 
 import ie.gmit.sw.Lang;
-
-import java.util.Arrays;
-
 /**
  * Hashed language distribution; a language distribution where each k-mer is hashed into
  * an array (there WILL be collisions, but since other language distributions of the same
@@ -44,8 +41,6 @@ public class HashedLangDist extends LangDist {
         int index = (hash & 0x7FFFFFFF) % hashRange;
         // record k-mer
         freqs[index]++;
-        // record the 1st character of the k-mer too, to help detect languages with large alphabets (eg. Chinese)
-        //freqs[kmer[0] % hashRange]++;
     }
 
     /**
@@ -57,21 +52,6 @@ public class HashedLangDist extends LangDist {
      */
     @Override
     public double[] getFrequencies() {
-        /* Different type of normalization (same as Utilities.normalize(...))
-        double lower = 0;
-        double upper = 1;
-
-        double[] dist = new double[hashRange];
-        double max = Arrays.stream(freqs).max().getAsInt();
-        double min = Arrays.stream(freqs).min().getAsInt();
-
-        for(int i=0; i<dist.length; i++) {
-            dist[i] = (freqs[i] - min)*(upper - lower)/(max - min) + lower;
-        }
-        return dist;
-        */
-
-
         double[] dist = new double[hashRange];
         for (int i = 0; i < hashRange; i++) {
             dist[i] = (double) freqs[i] / getNumRecords();

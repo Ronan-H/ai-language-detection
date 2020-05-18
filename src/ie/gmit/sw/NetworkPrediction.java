@@ -6,10 +6,9 @@ import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 public class NetworkPrediction {
@@ -54,16 +53,17 @@ public class NetworkPrediction {
             }
 
             System.out.println("\nReading file and predicting...");
+
+            List<String> samples = new TrainingDataProcessor(inputFile).getUnknownSamples();
             PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
                     Lang.Unidentified,
                     vectorSize,
                     ngramLength
             );
 
-            BufferedReader fileIn = new BufferedReader(new FileReader(inputFile));
-            String line;
-            while ((line = fileIn.readLine()) != null) {
-                dist.recordSample(line);
+            for (String sample : samples) {
+                System.out.println(sample);
+                dist.recordSample(sample);
             }
 
             MLData sample = new BasicMLData(dist.getFrequencies());

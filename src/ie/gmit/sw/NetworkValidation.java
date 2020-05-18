@@ -10,9 +10,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class NetworkValidation {
@@ -31,6 +29,7 @@ public class NetworkValidation {
         System.out.println("Loading parameters...");
         int vectorSize = (Integer) networkSelection.getSelectionChoice("vectorSize");
         int ngramLength = (Integer) networkSelection.getSelectionChoice("ngramLength");
+        int sampleLimit = (Integer) networkSelection.getSelectionChoice("sampleLimit");
 
         System.out.printf("Loading the nerual network from file: %s%n", nnPath.getName());
         BasicNetwork network = Utilities.loadNeuralNetwork("neural-network.nn");
@@ -47,13 +46,10 @@ public class NetworkValidation {
             langStats.put(l, new LangStats(l));
         }
 
-        String pattern = "\\((.*)\\)\\s*|[0-9]\\s*";
-        Pattern toRemove = Pattern.compile(pattern);
-        // read file line by line
-        while ((line = in.readLine()) != null) {
-            line = line.trim();
-            int atPos = line.lastIndexOf("@");
-            Lang lang = Lang.valueOf(line.substring(atPos + 1));
+        List<String[]> samples = new TrainingDataProcessor(samplesPath).getSamples(sampleLimit);
+        for (String[] sample : samples) {
+            String sampleText = sample[0];
+            Lang lang = Lang.valueOf(sample[1]);
 
             PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
                     Lang.Unidentified,
@@ -61,10 +57,7 @@ public class NetworkValidation {
                     ngramLength
             );
 
-            String sample = line.substring(0, atPos).toLowerCase();
-            sample = toRemove.matcher(sample).replaceAll("");
-            System.out.println(sample);
-            dist.recordSample(sample);
+            dist.recordSample(sampleText);
             MLData probs = new BasicMLData(dist.getFrequencies());
             Lang classification = Lang.values()[network.classify(probs)];
 
@@ -78,7 +71,6 @@ public class NetworkValidation {
 
             total++;
         }
-        in.close();
 
         double accuracy = (correct / (double) total) * 100.0;
 

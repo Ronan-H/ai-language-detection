@@ -6,7 +6,6 @@ import ie.gmit.sw.test.TestAIClassification;
 
 import java.io.*;
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class TrainingDataCreator {
     private NetworkSelection networkSelection;
@@ -28,39 +27,20 @@ public class TrainingDataCreator {
 
         System.out.printf("Creating hash vectors from samples in input file: %s%n", samplesPath.getName());
 
-        Map<Lang, Integer> sampleCounts = new HashMap<>();
-        Arrays.stream(Lang.values()).forEach(l -> sampleCounts.put(l, 0));
-
-        // -- using a hash vector for every sample --
-        BufferedReader in = new BufferedReader(new FileReader(samplesPath));
+        List<String[]> samples = new TrainingDataProcessor(samplesPath).getSamples(sampleLimit);
         List<PartitionedHashedLangDist> dists = new ArrayList<>();
-        String line;
-        String pattern = "\\((.*)\\)\\s*|[0-9]\\s*";
-        Pattern toRemove = Pattern.compile(pattern);
-        // read file line by line
-        while ((line = in.readLine()) != null) {
-            line = line.trim();
-            int atPos = line.lastIndexOf("@");
-            Lang lang = Lang.valueOf(line.substring(atPos + 1));
-
-            if (sampleCounts.get(lang) >= sampleLimit) {
-                continue;
-            }
-
-            String sample = line.substring(0, atPos).toLowerCase();
-            sample = toRemove.matcher(sample).replaceAll("");
+        for (String[] sample : samples) {
+            String sampleText = sample[0];
+            Lang lang = Lang.valueOf(sample[1]);
 
             PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
                     lang,
                     vectorSize,
                     ngramLength
             );
-            dist.recordSample(sample);
+            dist.recordSample(sampleText);
             dists.add(dist);
-
-            sampleCounts.put(lang, sampleCounts.get(lang) + 1);
         }
-        in.close();
 
         System.out.printf("Writing vectorized training data to file: %s%n", outPath.getName());
 
