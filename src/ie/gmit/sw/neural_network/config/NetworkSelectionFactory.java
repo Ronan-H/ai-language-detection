@@ -1,4 +1,4 @@
-package ie.gmit.sw;
+package ie.gmit.sw.neural_network.config;
 
 public class NetworkSelectionFactory {
     private static NetworkSelectionFactory instance;

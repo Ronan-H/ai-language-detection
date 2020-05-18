@@ -1,6 +1,8 @@
 package ie.gmit.sw.test;
 
-import ie.gmit.sw.*;
+import ie.gmit.sw.neural_network.config.NetworkSelection;
+import ie.gmit.sw.neural_network.config.NetworkSelectionFactory;
+import ie.gmit.sw.neural_network.NetworkTrainer;
 
 public class TestTrainNetwork {
     public static void main(String[] args) {

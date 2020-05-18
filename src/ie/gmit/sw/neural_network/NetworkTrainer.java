@@ -1,5 +1,7 @@
-package ie.gmit.sw;
+package ie.gmit.sw.neural_network;
 
+import ie.gmit.sw.language.Lang;
+import ie.gmit.sw.neural_network.config.NetworkSelection;
 import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationSoftMax;
 import org.encog.engine.network.activation.ActivationTANH;
@@ -17,29 +19,30 @@ import org.encog.persist.EncogDirectoryPersistence;
 import org.encog.util.csv.CSVFormat;
 
 import java.io.File;
+import java.io.IOException;
 
-public class NetworkTrainer {
-    private NetworkSelection networkSelection;
+public class NetworkTrainer extends NetworkStep {
     private File savePath;
     private int numInputs;
     private int numOutputs;
 
     public NetworkTrainer(NetworkSelection networkSelection, String savePath) {
-        this.networkSelection = networkSelection;
+        super(networkSelection);
         this.savePath = new File(savePath);
 
-        int vectorSize = (Integer) networkSelection.getSelectionChoice("vectorSize");
-        int ngramLength = (Integer) networkSelection.getSelectionChoice("ngramLength");
+        int vectorSize = (Integer) getSelectionChoice("vectorSize");
+        int ngramLength = (Integer) getSelectionChoice("ngramLength");
 
         numInputs = vectorSize * ngramLength;
         numOutputs = Lang.values().length - 1;
     }
 
-    public void train() {
+    @Override
+    public void executeStep() throws IOException {
         System.out.println("== Training ==");
         System.out.println("Loading parameters...");
-        int numEpochs = (Integer) networkSelection.getSelectionChoice("numEpochs");
-        double dropout = (Double) networkSelection.getSelectionChoice("dropout");
+        int numEpochs = (Integer) getSelectionChoice("numEpochs");
+        double dropout = (Double) getSelectionChoice("dropout");
 
         System.out.println("Computing hidden layer size:");
         int hiddenSize = computeHiddenLayerSize();
@@ -92,8 +95,16 @@ public class NetworkTrainer {
         System.out.println("Finished training the model.\n");
     }
 
+    public void train() {
+        try {
+            executeStep();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private int computeHiddenLayerSize() {
-        String expression = (String) networkSelection.getSelectionChoice("hiddenSize");
+        String expression = (String) getSelectionChoice("hiddenSize");
         String subbedExpression = expression.replace("input", Integer.toString(numInputs))
                                             .replace("output", Integer.toString(numOutputs));
         System.out.printf("\t%s = %s = ", expression, subbedExpression);

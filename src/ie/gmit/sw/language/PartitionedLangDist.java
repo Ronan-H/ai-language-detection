@@ -1,18 +1,16 @@
-package ie.gmit.sw.language_distribution;
+package ie.gmit.sw.language;
 
-import ie.gmit.sw.Lang;
-
-public class PartitionedHashedLangDist extends HashedLangDist {
+public class PartitionedLangDist extends LangDist {
     private int numPartitions;
-    private HashedLangDist[] partitions;
+    private LangDist[] partitions;
 
-    public PartitionedHashedLangDist(Lang lang, int hashRange, int numPartitions) {
+    public PartitionedLangDist(Lang lang, int hashRange, int numPartitions) {
         super(lang, hashRange);
         this.numPartitions = numPartitions;
 
-        partitions = new HashedLangDist[numPartitions];
+        partitions = new LangDist[numPartitions];
         for (int i = 0; i < numPartitions; i++) {
-            partitions[i] = new HashedLangDist(lang, hashRange);
+            partitions[i] = new LangDist(lang, hashRange);
         }
     }
 
@@ -34,7 +32,6 @@ public class PartitionedHashedLangDist extends HashedLangDist {
 
         for (int i = 0; i < numPartitions; i++) {
             double[] pFreqs = partitions[i].getFrequencies();
-
             System.arraycopy(pFreqs, 0, combined, i * getHashRange(), pFreqs.length);
         }
 

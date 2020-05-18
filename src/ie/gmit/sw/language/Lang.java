@@ -1,4 +1,4 @@
-package ie.gmit.sw;
+package ie.gmit.sw.language;
 
 /**
  * Enumeration of languages with their names.

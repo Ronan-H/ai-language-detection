@@ -1,4 +1,6 @@
-package ie.gmit.sw;
+package ie.gmit.sw.neural_network.config;
+
+import ie.gmit.sw.UserInput;
 
 import java.util.*;
 

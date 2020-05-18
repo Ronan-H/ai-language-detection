@@ -1,4 +1,4 @@
-package ie.gmit.sw;
+package ie.gmit.sw.language;
 
 public class LangStats implements Comparable<LangStats> {
     private Lang lang;

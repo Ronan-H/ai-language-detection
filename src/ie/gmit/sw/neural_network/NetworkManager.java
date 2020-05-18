@@ -1,4 +1,6 @@
-package ie.gmit.sw;
+package ie.gmit.sw.neural_network;
+
+import ie.gmit.sw.neural_network.config.NetworkSelection;
 
 import java.io.IOException;
 

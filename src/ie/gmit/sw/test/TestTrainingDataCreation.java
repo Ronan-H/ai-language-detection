@@ -1,8 +1,8 @@
 package ie.gmit.sw.test;
 
-import ie.gmit.sw.NetworkSelection;
-import ie.gmit.sw.NetworkSelectionFactory;
-import ie.gmit.sw.TrainingDataCreator;
+import ie.gmit.sw.neural_network.config.NetworkSelection;
+import ie.gmit.sw.neural_network.config.NetworkSelectionFactory;
+import ie.gmit.sw.neural_network.TrainingDataCreator;
 
 import java.io.*;
 

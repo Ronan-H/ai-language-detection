@@ -1,6 +1,9 @@
-package ie.gmit.sw;
+package ie.gmit.sw.neural_network;
 
-import ie.gmit.sw.language_distribution.PartitionedHashedLangDist;
+import ie.gmit.sw.language.Lang;
+import ie.gmit.sw.language.LangStats;
+import ie.gmit.sw.language.PartitionedLangDist;
+import ie.gmit.sw.neural_network.config.NetworkSelection;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
@@ -10,23 +13,27 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class NetworkValidation {
-    private NetworkSelection networkSelection;
+public class NetworkValidation extends NetworkStep {
     private File samplesPath;
     private File nnPath;
 
     public NetworkValidation(NetworkSelection networkSelection, String samplesPath, String nnPath) {
-        this.networkSelection = networkSelection;
+        super(networkSelection);
         this.samplesPath = new File(samplesPath);
         this.nnPath = new File(nnPath);
     }
 
     public void runTests() throws IOException {
+        executeStep();
+    }
+
+    @Override
+    public void executeStep() throws IOException {
         System.out.println("== Validation ==");
         System.out.println("Loading parameters...");
-        int vectorSize = (Integer) networkSelection.getSelectionChoice("vectorSize");
-        int ngramLength = (Integer) networkSelection.getSelectionChoice("ngramLength");
-        int sampleLimit = (Integer) networkSelection.getSelectionChoice("sampleLimit");
+        int vectorSize = (Integer) getSelectionChoice("vectorSize");
+        int ngramLength = (Integer) getSelectionChoice("ngramLength");
+        int sampleLimit = (Integer) getSelectionChoice("sampleLimit");
 
         System.out.printf("Loading the nerual network from file: %s%n", nnPath.getName());
         BasicNetwork network = (BasicNetwork) EncogDirectoryPersistence.loadObject(nnPath);
@@ -47,7 +54,7 @@ public class NetworkValidation {
             String sampleText = sample[0];
             Lang lang = Lang.valueOf(sample[1]);
 
-            PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
+            PartitionedLangDist dist = new PartitionedLangDist(
                     Lang.Unidentified,
                     vectorSize,
                     ngramLength

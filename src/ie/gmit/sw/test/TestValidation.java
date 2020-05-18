@@ -1,8 +1,8 @@
 package ie.gmit.sw.test;
 
-import ie.gmit.sw.NetworkSelection;
-import ie.gmit.sw.NetworkSelectionFactory;
-import ie.gmit.sw.NetworkValidation;
+import ie.gmit.sw.neural_network.config.NetworkSelection;
+import ie.gmit.sw.neural_network.config.NetworkSelectionFactory;
+import ie.gmit.sw.neural_network.NetworkValidation;
 import java.io.IOException;
 
 public class TestValidation {

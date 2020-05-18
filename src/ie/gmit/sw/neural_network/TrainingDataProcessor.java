@@ -1,4 +1,6 @@
-package ie.gmit.sw;
+package ie.gmit.sw.neural_network;
+
+import ie.gmit.sw.language.Lang;
 
 import java.io.*;
 import java.util.*;

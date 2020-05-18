@@ -1,6 +1,9 @@
-package ie.gmit.sw;
+package ie.gmit.sw.neural_network;
 
-import ie.gmit.sw.language_distribution.PartitionedHashedLangDist;
+import ie.gmit.sw.language.Lang;
+import ie.gmit.sw.UserInput;
+import ie.gmit.sw.language.PartitionedLangDist;
+import ie.gmit.sw.neural_network.config.NetworkSelection;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
@@ -11,24 +14,28 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
-public class NetworkPrediction {
-    private NetworkSelection networkSelection;
+public class NetworkPrediction extends NetworkStep {
     private File nnPath;
     private Scanner console;
 
     public NetworkPrediction(NetworkSelection networkSelection, String nnPath) {
-        this.networkSelection = networkSelection;
+        super(networkSelection);
         this.nnPath = new File(nnPath);
         console = UserInput.getScanner();
     }
 
     public void allowUserInputPredictions() throws IOException {
+        executeStep();
+    }
+
+    @Override
+    public void executeStep() throws IOException {
         System.out.println("== Live Data Prediction ==");
         System.out.println("You will now have the opportunity to predict \"live\" language data from a file.\n");
 
         System.out.println("Loading parameters...");
-        int vectorSize = (Integer) networkSelection.getSelectionChoice("vectorSize");
-        int ngramLength = (Integer) networkSelection.getSelectionChoice("ngramLength");
+        int vectorSize = (Integer) getSelectionChoice("vectorSize");
+        int ngramLength = (Integer) getSelectionChoice("ngramLength");
 
         System.out.printf("Loading the nerual network from file: %s%n", nnPath.getName());
         BasicNetwork network = (BasicNetwork) EncogDirectoryPersistence.loadObject(nnPath);
@@ -55,7 +62,7 @@ public class NetworkPrediction {
             System.out.println("\nReading file and predicting...");
 
             List<String> samples = new TrainingDataProcessor(inputFile).getUnknownSamples();
-            PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
+            PartitionedLangDist dist = new PartitionedLangDist(
                     Lang.Unidentified,
                     vectorSize,
                     ngramLength
