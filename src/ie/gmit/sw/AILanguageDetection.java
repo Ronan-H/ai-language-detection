@@ -5,12 +5,8 @@ import java.io.IOException;
 
 import static java.lang.System.out;
 
-public class Menu {
+public class AILanguageDetection {
     public void go() throws IOException {
-        String samplesPath = "./wili-2018-Small-11750-Edited.txt";
-        String trainingDataPath = "./training-data.csv";
-        String nnPath = "./neural-network.nn";
-
         // print the program header
         out.println();
         out.println(" =================================");
@@ -25,7 +21,6 @@ public class Menu {
         out.println("  4. Test your own input (from a file)\n");
 
         NetworkSelection networkSelection = NetworkSelectionFactory.getInstance().getStandardSelections();
-
         if (networkSelection.shouldUseOptimizedDefaults()) {
             networkSelection.loadOptimizedDefaults();
         }
@@ -33,27 +28,26 @@ public class Menu {
             // allow the user to select all parameters
             networkSelection.getUserSelectionForAll();
         }
-
         out.println(networkSelection.toString());
 
-        // create data set using chosen parameters
-        new TrainingDataCreator(
+        NetworkManager networkManager = new NetworkManager(
                 networkSelection,
-                samplesPath,
-                trainingDataPath
-        ).create();
+                "./wili-2018-Small-11750-Edited.txt",
+                "./training-data.csv",
+                "./neural-network.nn"
+        );
+
+        // create data set using chosen parameters
+        networkManager.createTrainingData();
 
         // train network using user parameters
-        new NetworkTrainer(
-                networkSelection,
-                "./neural-network.nn"
-        ).train();
+        networkManager.trainNetwork();
 
         // test accuracy/sensitivity/specificity
-        new NetworkValidation(networkSelection, samplesPath, nnPath).testAccuracy();
+        networkManager.runValidationTests();
 
         // allow the user to specify their own language sample as input, from a file
-        new NetworkPrediction(networkSelection, nnPath).allowUserInputPredictions();
+        networkManager.allowUserInputPredictions();
 
         System.out.println("\nFinished. Exiting...\n");
     }

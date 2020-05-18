@@ -1,17 +1,14 @@
 package ie.gmit.sw;
 
-import ie.gmit.sw.code_stubs.Utilities;
 import ie.gmit.sw.language_distribution.PartitionedHashedLangDist;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
+import org.encog.persist.EncogDirectoryPersistence;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Pattern;
 
 public class NetworkValidation {
     private NetworkSelection networkSelection;
@@ -24,7 +21,7 @@ public class NetworkValidation {
         this.nnPath = new File(nnPath);
     }
 
-    public void testAccuracy() throws IOException {
+    public void runTests() throws IOException {
         System.out.println("== Validation ==");
         System.out.println("Loading parameters...");
         int vectorSize = (Integer) networkSelection.getSelectionChoice("vectorSize");
@@ -32,11 +29,10 @@ public class NetworkValidation {
         int sampleLimit = (Integer) networkSelection.getSelectionChoice("sampleLimit");
 
         System.out.printf("Loading the nerual network from file: %s%n", nnPath.getName());
-        BasicNetwork network = Utilities.loadNeuralNetwork("neural-network.nn");
+        BasicNetwork network = (BasicNetwork) EncogDirectoryPersistence.loadObject(nnPath);
+
         System.out.println("Generating validation statistics...\n");
 
-        BufferedReader in = new BufferedReader(new FileReader(samplesPath));
-        String line;
         int total = 0;
         int correct = 0;
 

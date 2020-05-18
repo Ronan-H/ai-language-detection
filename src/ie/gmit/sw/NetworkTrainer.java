@@ -1,9 +1,6 @@
 package ie.gmit.sw;
 
-import ie.gmit.sw.code_stubs.Utilities;
-import ie.gmit.sw.test.TestAIClassification;
 import org.encog.Encog;
-import org.encog.engine.network.activation.ActivationReLU;
 import org.encog.engine.network.activation.ActivationSoftMax;
 import org.encog.engine.network.activation.ActivationTANH;
 import org.encog.ml.data.MLDataSet;
@@ -16,6 +13,7 @@ import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.cross.CrossValidationKFold;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
+import org.encog.persist.EncogDirectoryPersistence;
 import org.encog.util.csv.CSVFormat;
 
 import java.io.File;
@@ -87,8 +85,10 @@ public class NetworkTrainer {
         cv.finishTraining();
         System.out.println("\nFinished training.");
         Encog.getInstance().shutdown();
+
         System.out.printf("Saving the model to file: %s%n", savePath.getName());
-        Utilities.saveNeuralNetwork(network, savePath.getPath());
+        EncogDirectoryPersistence.saveObject(savePath, network);
+
         System.out.println("Finished training the model.\n");
     }
 

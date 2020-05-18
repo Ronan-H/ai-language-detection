@@ -1,10 +1,10 @@
 package ie.gmit.sw;
 
-import ie.gmit.sw.code_stubs.Utilities;
 import ie.gmit.sw.language_distribution.PartitionedHashedLangDist;
 import org.encog.ml.data.MLData;
 import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
+import org.encog.persist.EncogDirectoryPersistence;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,17 +31,17 @@ public class NetworkPrediction {
         int ngramLength = (Integer) networkSelection.getSelectionChoice("ngramLength");
 
         System.out.printf("Loading the nerual network from file: %s%n", nnPath.getName());
-        BasicNetwork network = Utilities.loadNeuralNetwork("neural-network.nn");
+        BasicNetwork network = (BasicNetwork) EncogDirectoryPersistence.loadObject(nnPath);
 
         String input;
         File inputFile;
         while (true) {
             System.out.println("Enter the path of a file containing sample language data to predict.");
-            System.out.println("(or enter an empty string to exit)\n");
+            System.out.println("(or enter \"exit\" to exit)\n");
             System.out.print("> ");
             input = console.nextLine();
 
-            if (input.length() == 0) {
+            if (input.trim().equalsIgnoreCase("exit")) {
                 return;
             }
             else {
@@ -62,13 +62,12 @@ public class NetworkPrediction {
             );
 
             for (String sample : samples) {
-                System.out.println(sample);
                 dist.recordSample(sample);
             }
 
             MLData sample = new BasicMLData(dist.getFrequencies());
             Lang classification = Lang.values()[network.classify(sample)];
-            System.out.println("Predicted classification: " + classification.getLanguageName());
+            System.out.printf("Predicted classification: %s%n%n", classification.getLanguageName());
         }
     }
 }

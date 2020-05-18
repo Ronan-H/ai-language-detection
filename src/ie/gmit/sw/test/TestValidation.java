@@ -11,6 +11,6 @@ public class TestValidation {
         networkSelection.loadOptimizedDefaults();
         System.out.println(networkSelection.toString());
 
-        new NetworkValidation(networkSelection, "wili-2018-Small-11750-Edited.txt", "neural-network.nn").testAccuracy();
+        new NetworkValidation(networkSelection, "wili-2018-Small-11750-Edited.txt", "neural-network.nn").runTests();
     }
 }

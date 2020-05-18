@@ -2,7 +2,6 @@ package ie.gmit.sw;
 
 import ie.gmit.sw.language_distribution.HashedLangDist;
 import ie.gmit.sw.language_distribution.PartitionedHashedLangDist;
-import ie.gmit.sw.test.TestAIClassification;
 
 import java.io.*;
 import java.util.*;
@@ -45,7 +44,7 @@ public class TrainingDataCreator {
         System.out.printf("Writing vectorized training data to file: %s%n", outPath.getName());
 
         try {
-            writeToFile("./training-data.csv", dists, TestAIClassification.HASH_RANGE);
+            writeToFile(dists);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,8 +52,8 @@ public class TrainingDataCreator {
         System.out.println("Finished creating training data.\n");
     }
 
-    public static void writeToFile(String filePath, List<PartitionedHashedLangDist> dists, int hashRange) throws IOException {
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath)));
+    private void writeToFile(List<PartitionedHashedLangDist> dists) throws IOException {
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outPath)));
 
         for (HashedLangDist dist : dists) {
             double[] normalizedFreqs = dist.getFrequencies();
