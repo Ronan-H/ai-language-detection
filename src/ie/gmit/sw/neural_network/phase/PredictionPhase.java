@@ -1,4 +1,4 @@
-package ie.gmit.sw.neural_network;
+package ie.gmit.sw.neural_network.phase;
 
 import ie.gmit.sw.language.Lang;
 import ie.gmit.sw.UserInput;
@@ -14,22 +14,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
-public class NetworkPrediction extends NetworkStep {
+public class PredictionPhase extends NetworkPhase {
     private File nnPath;
     private Scanner console;
 
-    public NetworkPrediction(NetworkSelection networkSelection, String nnPath) {
+    public PredictionPhase(NetworkSelection networkSelection, String nnPath) {
         super(networkSelection);
         this.nnPath = new File(nnPath);
         console = UserInput.getScanner();
     }
 
     public void allowUserInputPredictions() throws IOException {
-        executeStep();
+        executePhase();
     }
 
     @Override
-    public void executeStep() throws IOException {
+    public void executePhase() throws IOException {
         System.out.println("== Live Data Prediction ==");
         System.out.println("You will now have the opportunity to predict \"live\" language data from a file.\n");
 
@@ -61,7 +61,7 @@ public class NetworkPrediction extends NetworkStep {
 
             System.out.println("\nReading file and predicting...");
 
-            List<String> samples = new TrainingDataProcessor(inputFile).getUnknownSamples();
+            List<String> samples = new SampleFileReader(inputFile).getUnknownSamples();
             PartitionedLangDist dist = new PartitionedLangDist(
                     Lang.Unidentified,
                     vectorSize,

@@ -16,7 +16,8 @@ public class NetworkSelectionFactory {
     public NetworkSelection getStandardSelections() {
         NetworkSelection networkSelection = new NetworkSelection();
 
-        networkSelection.addSelection("vectorSize",
+        networkSelection.addSelection(
+                "vectorSize",
                 new Selection<>(
                 "N-gram feature vector size",
                         "This decides the fixed space that n-gram frequency data will have to be \"squashed\" into.",
@@ -26,7 +27,8 @@ public class NetworkSelectionFactory {
                 )
         );
 
-        networkSelection.addSelection("ngramLength",
+        networkSelection.addSelection(
+                "ngramLength",
                 new Selection<>(
                         "N-gram max length",
                         "This is the size of the \"window\" that is passed over the input data, in characters.\n\tAll n-gram lengths up to n will be used as input (I.e. selecting 2 will store n-grams of size 1 AND 2 as input).",
@@ -36,7 +38,8 @@ public class NetworkSelectionFactory {
                 )
         );
 
-        networkSelection.addSelection("sampleLimit",
+        networkSelection.addSelection(
+                "sampleLimit",
                 new Selection<>(
                         "Language data sample limit",
                         "Since some languages have more samples than others, limiting samples may help give each language a more equal representation.",
@@ -46,7 +49,8 @@ public class NetworkSelectionFactory {
                 )
         );
 
-        networkSelection.addSelection("numEpochs",
+        networkSelection.addSelection(
+                "numEpochs",
                 new Selection<>(
                         "Number of epochs to run",
                         "One \"epoch\" means on full pass over the data during training.",
@@ -56,7 +60,8 @@ public class NetworkSelectionFactory {
                 )
         );
 
-        networkSelection.addSelection("dropout",
+        networkSelection.addSelection(
+                "dropout",
                 new Selection<>(
                         "Dropout proportion",
                         "\"Dropout\" causes the network to ignore random neurons during training.",
@@ -66,7 +71,8 @@ public class NetworkSelectionFactory {
                 )
         );
 
-        networkSelection.addSelection("hiddenSize",
+        networkSelection.addSelection(
+                "hiddenSize",
                 new Selection<>(
                         "Hidden layer size formula",
                         "Hidden layers are the layers between the input and output layer in a feedforward neural network.\n\tFor this network, I have found that using more than one layer is not practical, so only one hidden layer will be used.",
@@ -74,10 +80,11 @@ public class NetworkSelectionFactory {
                         new String[] {
                                 "input + output",
                                 "(input + output) / 2",
+                                "(input + output) / 4",
                                 "(input * 0.66) + output",
                                 "sqrt(input * output)"
                         },
-                        "(input + output) / 2"
+                        "(input + output) / 4"
                 )
         );
 

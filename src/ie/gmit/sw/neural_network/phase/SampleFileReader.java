@@ -1,4 +1,4 @@
-package ie.gmit.sw.neural_network;
+package ie.gmit.sw.neural_network.phase;
 
 import ie.gmit.sw.language.Lang;
 
@@ -6,16 +6,16 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class TrainingDataProcessor {
+public class SampleFileReader {
     private File inputFile;
     private Pattern toRemove;
 
-    public TrainingDataProcessor(File inputFile) {
+    public SampleFileReader(File inputFile) {
         this.inputFile = inputFile;
         toRemove = Pattern.compile("\\s*\\((.*)\\)|\\[[0-9]*\\]\\s*");
     }
 
-    public String preprocessSample(String sample) {
+    private String preprocessSample(String sample) {
         String s = sample.trim();
         s = s.toLowerCase();
         s = toRemove.matcher(s).replaceAll("");
@@ -23,12 +23,12 @@ public class TrainingDataProcessor {
     }
 
     public List<String[]> getSamples(int sampleLimit) throws IOException {
+        List<String[]> samples = new ArrayList<>();
         Map<Lang, Integer> sampleCounts = new HashMap<>();
         Arrays.stream(Lang.values()).forEach(l -> sampleCounts.put(l, 0));
 
         BufferedReader in = new BufferedReader(new FileReader(inputFile));
         String line;
-        List<String[]> samples = new ArrayList<>();
         // read file line by line
         while ((line = in.readLine()) != null) {
             line = line.trim();
@@ -50,9 +50,10 @@ public class TrainingDataProcessor {
     }
 
     public List<String> getUnknownSamples() throws IOException {
+        List<String> samples = new ArrayList<>();
+
         BufferedReader in = new BufferedReader(new FileReader(inputFile));
         String line;
-        List<String> samples = new ArrayList<>();
         // read file line by line
         while ((line = in.readLine()) != null) {
             samples.add(preprocessSample(line));

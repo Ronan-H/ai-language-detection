@@ -2,7 +2,7 @@ package ie.gmit.sw.test;
 
 import ie.gmit.sw.neural_network.config.NetworkSelection;
 import ie.gmit.sw.neural_network.config.NetworkSelectionFactory;
-import ie.gmit.sw.neural_network.NetworkTrainer;
+import ie.gmit.sw.neural_network.phase.TrainingPhase;
 
 public class TestTrainNetwork {
     public static void main(String[] args) {
@@ -12,7 +12,6 @@ public class TestTrainNetwork {
         networkSelection.loadOptimizedDefaults();
         System.out.println(networkSelection.toString());
 
-        NetworkTrainer networkTrainer = new NetworkTrainer(networkSelection, savePath);
-        networkTrainer.train();
+        new TrainingPhase(networkSelection, savePath).train();
     }
 }

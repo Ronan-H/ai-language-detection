@@ -1,7 +1,7 @@
 package ie.gmit.sw;
 
 
-import ie.gmit.sw.neural_network.NetworkManager;
+import ie.gmit.sw.neural_network.phase.PhaseManager;
 import ie.gmit.sw.neural_network.config.NetworkSelection;
 import ie.gmit.sw.neural_network.config.NetworkSelectionFactory;
 
@@ -32,9 +32,11 @@ public class AILanguageDetection {
             // allow the user to select all parameters
             networkSelection.getUserSelectionForAll();
         }
+
+        // print network configuration
         out.println(networkSelection.toString());
 
-        NetworkManager networkManager = new NetworkManager(
+        PhaseManager networkManager = new PhaseManager(
                 networkSelection,
                 "./wili-2018-Small-11750-Edited.txt",
                 "./training-data.csv",

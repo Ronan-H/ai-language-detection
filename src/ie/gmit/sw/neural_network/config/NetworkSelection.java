@@ -17,6 +17,15 @@ public class NetworkSelection {
         console = UserInput.getScanner();
     }
 
+    public void addSelection(String key, Selection selection) {
+        selections.add(selection);
+        selectionMap.put(key, selection);
+    }
+
+    public Object getSelectionChoice(String selectionKey) {
+        return selectionMap.get(selectionKey).getChoice();
+    }
+
     public void getUserSelectionForAll() {
         for (Selection selection : selections) {
             getUserSelection(selection);
@@ -38,17 +47,11 @@ public class NetworkSelection {
         }
     }
 
-    public Object getSelectionChoice(String selectionKey) {
-        return selectionMap.get(selectionKey).getChoice();
-    }
-
-    public void addSelection(String key, Selection selection) {
-        selections.add(selection);
-        selectionMap.put(key, selection);
-    }
-
     public boolean shouldUseOptimizedDefaults() {
-        String[] options = {"Let me pick what parameters to use", "Use the \"optimal\" default parameters for all options"};
+        String[] options = {
+                "Let me pick what parameters to use",
+                "Use the \"optimal\" default parameters for all options"
+        };
 
         out.println("Would you like to choose all parameters for the neural network, or use the optimized default parameters?");
         int chosen = getUserOption(options);

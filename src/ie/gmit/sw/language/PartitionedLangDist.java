@@ -16,14 +16,13 @@ public class PartitionedLangDist extends LangDist {
 
     public void recordSample(String line) {
         for (int i = 0; i < numPartitions; i++) {
-            recordSample(line, i);
+            recordSample(line, i + 1);
         }
     }
 
-
     @Override
     public void recordSample(String line, int k) {
-        partitions[k].recordSample(line, k + 1);
+        partitions[k - 1].recordSample(line, k);
     }
 
     @Override

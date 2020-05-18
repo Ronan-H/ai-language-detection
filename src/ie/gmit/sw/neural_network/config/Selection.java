@@ -9,15 +9,6 @@ public class Selection<T> {
     private T best;
     private T chosen;
 
-    public Selection(String prompt, String explanation, String guidance, T[] options, String[] optionLabels, T best) {
-        this.prompt = prompt;
-        this.explanation = explanation;
-        this.guidance = guidance;
-        this.options = options;
-        this.optionLabels = optionLabels;
-        this.best = best;
-    }
-
     public Selection(String prompt, String explanation, String guidance, T[] options, T best) {
         this.prompt = prompt;
         this.explanation = explanation;

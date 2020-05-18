@@ -2,7 +2,7 @@ package ie.gmit.sw.test;
 
 import ie.gmit.sw.neural_network.config.NetworkSelection;
 import ie.gmit.sw.neural_network.config.NetworkSelectionFactory;
-import ie.gmit.sw.neural_network.TrainingDataCreator;
+import ie.gmit.sw.neural_network.phase.InputVectorCreationPhase;
 
 import java.io.*;
 
@@ -15,7 +15,6 @@ public class TestTrainingDataCreation {
         networkSelection.loadOptimizedDefaults();
         System.out.println(networkSelection.toString());
 
-        TrainingDataCreator trainingDataCreator = new TrainingDataCreator(networkSelection, samplesPath, outPath);
-        trainingDataCreator.create();
+        new InputVectorCreationPhase(networkSelection, samplesPath, outPath).create();
     }
 }

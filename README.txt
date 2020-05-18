@@ -10,7 +10,7 @@ The flow of this application is as follows:
   3. Accuracy, sensitivity, and specificity stats
   4. Test your own input (from a file)
 
-The program allows configuration of many aspects of the neural network. This includes the hashing range, n-gram length, and more. The first option you are offered is whether or not you want to configure all of these options yourself, or use the "optimized default parameters" which I have selected. The optimized defaults exist as a benchmark of the program's best performing neural network configuration. This is expected to train to ~80-85% in about 3 minutes (time may vary on different hardware). Keep in mind that even a small change to the network's optimal configuration could lead to catastrophicly bad results.
+The program allows configuration of many aspects of the neural network. This includes the hashing range, n-gram length, and more. The first option you are offered is whether or not you want to configure all of these options yourself, or use the "optimized default parameters" which I have selected. The optimized defaults exist as a benchmark of the program's best performing neural network configuration. This is expected to train to ~85% in about 1 minute (time may vary on different hardware). Keep in mind that even a small change to the network's optimal configuration could lead to catastrophicly bad results.
 
 == Neural network design ==
 I have mostly stuck to the design outlined in the project specification document. A hashed n-gram feature vector generated from a language sample is fed into the network as input, and a 235 neuron softmax output predicts the language classification.

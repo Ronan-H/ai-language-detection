@@ -1,4 +1,4 @@
-package ie.gmit.sw.neural_network;
+package ie.gmit.sw.neural_network.phase;
 
 import ie.gmit.sw.language.Lang;
 import ie.gmit.sw.language.LangStats;
@@ -13,43 +13,42 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class NetworkValidation extends NetworkStep {
+public class ValidationPhase extends NetworkPhase {
     private File samplesPath;
     private File nnPath;
 
-    public NetworkValidation(NetworkSelection networkSelection, String samplesPath, String nnPath) {
+    public ValidationPhase(NetworkSelection networkSelection, String samplesPath, String nnPath) {
         super(networkSelection);
         this.samplesPath = new File(samplesPath);
         this.nnPath = new File(nnPath);
     }
 
     public void runTests() throws IOException {
-        executeStep();
+        executePhase();
+        onPhaseFinished();
     }
 
     @Override
-    public void executeStep() throws IOException {
+    public void executePhase() throws IOException {
         System.out.println("== Validation ==");
         System.out.println("Loading parameters...");
         int vectorSize = (Integer) getSelectionChoice("vectorSize");
         int ngramLength = (Integer) getSelectionChoice("ngramLength");
         int sampleLimit = (Integer) getSelectionChoice("sampleLimit");
 
-        System.out.printf("Loading the nerual network from file: %s%n", nnPath.getName());
+        System.out.printf("Loading the neural network from a file: %s%n", nnPath.getName());
         BasicNetwork network = (BasicNetwork) EncogDirectoryPersistence.loadObject(nnPath);
 
         System.out.println("Generating validation statistics...\n");
-
         int total = 0;
         int correct = 0;
-
         Map<Lang, LangStats> langStats = new HashMap<>();
         for (int i = 0; i < Lang.values().length - 1; i++) {
             Lang l = Lang.values()[i];
             langStats.put(l, new LangStats(l));
         }
 
-        List<String[]> samples = new TrainingDataProcessor(samplesPath).getSamples(sampleLimit);
+        List<String[]> samples = new SampleFileReader(samplesPath).getSamples(sampleLimit);
         for (String[] sample : samples) {
             String sampleText = sample[0];
             Lang lang = Lang.valueOf(sample[1]);

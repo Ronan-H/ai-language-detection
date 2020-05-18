@@ -1,4 +1,4 @@
-package ie.gmit.sw.neural_network;
+package ie.gmit.sw.neural_network.phase;
 
 import ie.gmit.sw.language.Lang;
 import ie.gmit.sw.neural_network.config.NetworkSelection;
@@ -21,24 +21,33 @@ import org.encog.util.csv.CSVFormat;
 import java.io.File;
 import java.io.IOException;
 
-public class NetworkTrainer extends NetworkStep {
+public class TrainingPhase extends NetworkPhase {
     private File savePath;
-    private int numInputs;
-    private int numOutputs;
+    private int inputs;
+    private int outputs;
 
-    public NetworkTrainer(NetworkSelection networkSelection, String savePath) {
+    public TrainingPhase(NetworkSelection networkSelection, String savePath) {
         super(networkSelection);
         this.savePath = new File(savePath);
 
         int vectorSize = (Integer) getSelectionChoice("vectorSize");
         int ngramLength = (Integer) getSelectionChoice("ngramLength");
 
-        numInputs = vectorSize * ngramLength;
-        numOutputs = Lang.values().length - 1;
+        inputs = vectorSize * ngramLength;
+        outputs = Lang.values().length - 1;
+    }
+
+    public void train() {
+        try {
+            executePhase();
+            onPhaseFinished();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void executeStep() throws IOException {
+    public void executePhase() throws IOException {
         System.out.println("== Training ==");
         System.out.println("Loading parameters...");
         int numEpochs = (Integer) getSelectionChoice("numEpochs");
@@ -48,29 +57,26 @@ public class NetworkTrainer extends NetworkStep {
         int hiddenSize = computeHiddenLayerSize();
 
         System.out.println("Building the neural network topology...\n");
-
-        //Configure the neural network topology.
         BasicNetwork network = new BasicNetwork();
-        network.addLayer(new BasicLayer(null, true, numInputs, dropout));
+        network.addLayer(new BasicLayer(null, true, inputs, dropout));
         network.addLayer(new BasicLayer(new ActivationTANH(), true, hiddenSize, dropout));
-        network.addLayer(new BasicLayer(new ActivationSoftMax(), false, numOutputs, dropout));
+        network.addLayer(new BasicLayer(new ActivationSoftMax(), false, outputs, dropout));
         network.getStructure().finalizeStructure();
         network.reset();
 
         System.out.println("Loading the training data...\n");
-        //Read the CSV file "data.csv" into memory. Encog expects your CSV file to have input + output number of columns.
         DataSetCODEC dsc = new CSVDataCODEC(
                 new File("training-data.csv"),
                 CSVFormat.ENGLISH,
                 false,
-                numInputs,
-                numOutputs,
+                inputs,
+                outputs,
                 false
         );
         MemoryDataLoader mdl = new MemoryDataLoader(dsc);
         MLDataSet trainingSet = mdl.external2Memory();
-
         FoldedDataSet folded = new FoldedDataSet(trainingSet);
+
         ResilientPropagation train = new ResilientPropagation(network, folded);
         train.setDroupoutRate(dropout);
         train.setErrorFunction(new CrossEntropyErrorFunction());
@@ -78,6 +84,7 @@ public class NetworkTrainer extends NetworkStep {
         CrossValidationKFold cv = new CrossValidationKFold(train, 5);
 
         System.out.println("Training...");
+        long startTime = System.currentTimeMillis();
         //Train the neural network
         for (int epoch = 1; epoch <= numEpochs; epoch++) {
             System.out.printf("\tEpoch %2d ... ", epoch);
@@ -86,7 +93,15 @@ public class NetworkTrainer extends NetworkStep {
         }
 
         cv.finishTraining();
+
+        // timer calculations
+        long timeTaken = System.currentTimeMillis() - startTime;
+        double seconds = (double) timeTaken / 1000;
+        int minutes = (int) Math.floor(seconds / 60);
+        double remSeconds = seconds - (minutes * 60);
+
         System.out.println("\nFinished training.");
+        System.out.printf("Time taken: %dm %.2fs%n", minutes, remSeconds);
         Encog.getInstance().shutdown();
 
         System.out.printf("Saving the model to file: %s%n", savePath.getName());
@@ -95,33 +110,28 @@ public class NetworkTrainer extends NetworkStep {
         System.out.println("Finished training the model.\n");
     }
 
-    public void train() {
-        try {
-            executeStep();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private int computeHiddenLayerSize() {
         String expression = (String) getSelectionChoice("hiddenSize");
-        String subbedExpression = expression.replace("input", Integer.toString(numInputs))
-                                            .replace("output", Integer.toString(numOutputs));
+        String subbedExpression = expression.replace("input", Integer.toString(inputs))
+                                            .replace("output", Integer.toString(outputs));
         System.out.printf("\t%s = %s = ", expression, subbedExpression);
         int result;
 
         switch (expression) {
             case "input + output":
-                result = numInputs + numOutputs;
+                result = inputs + outputs;
                 break;
             case "(input + output) / 2":
-                result =  (numInputs + numOutputs) / 2;
+                result =  (inputs + outputs) / 2;
+                break;
+            case "(input + output) / 4":
+                result =  (inputs + outputs) / 4;
                 break;
             case "(input * 0.66) + output":
-                result =  (int) ((numInputs * 0.66) + numOutputs);
+                result =  (int) ((inputs * 0.66) + outputs);
                 break;
             case "sqrt(input * output)":
-                result =  (int) Math.sqrt(numInputs * numOutputs);
+                result =  (int) Math.sqrt(inputs * outputs);
                 break;
             default:
                 // selected option is invalid...this indicated a compile time bug
