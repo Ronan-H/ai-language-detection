@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class NetworkValidation {
     private NetworkSelection networkSelection;
@@ -46,6 +47,8 @@ public class NetworkValidation {
             langStats.put(l, new LangStats(l));
         }
 
+        String pattern = "\\((.*)\\)\\s*|[0-9]\\s*";
+        Pattern toRemove = Pattern.compile(pattern);
         // read file line by line
         while ((line = in.readLine()) != null) {
             line = line.trim();
@@ -57,9 +60,13 @@ public class NetworkValidation {
                     vectorSize,
                     ngramLength
             );
-            dist.recordSample(line);
-            MLData sample = new BasicMLData(dist.getFrequencies());
-            Lang classification = Lang.values()[network.classify(sample)];
+
+            String sample = line.substring(0, atPos).toLowerCase();
+            sample = toRemove.matcher(sample).replaceAll("");
+            System.out.println(sample);
+            dist.recordSample(sample);
+            MLData probs = new BasicMLData(dist.getFrequencies());
+            Lang classification = Lang.values()[network.classify(probs)];
 
             if (classification == lang) {
                 correct++;

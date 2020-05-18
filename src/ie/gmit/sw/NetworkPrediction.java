@@ -40,38 +40,35 @@ public class NetworkPrediction {
             System.out.println("Enter the path of a file containing sample language data to predict.");
             System.out.println("(or enter an empty string to exit)\n");
             System.out.print("> ");
-
             input = console.nextLine();
+
             if (input.length() == 0) {
-                System.out.println("Exiting...");
-                System.exit(0);
+                return;
             }
             else {
                 inputFile = new File(input);
                 if (!inputFile.exists() || inputFile.isDirectory()) {
                     System.out.println("Invalid file, please try again.\n");
-                }
-                else {
-                    break;
+                    continue;
                 }
             }
+
+            System.out.println("\nReading file and predicting...");
+            PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
+                    Lang.Unidentified,
+                    vectorSize,
+                    ngramLength
+            );
+
+            BufferedReader fileIn = new BufferedReader(new FileReader(inputFile));
+            String line;
+            while ((line = fileIn.readLine()) != null) {
+                dist.recordSample(line);
+            }
+
+            MLData sample = new BasicMLData(dist.getFrequencies());
+            Lang classification = Lang.values()[network.classify(sample)];
+            System.out.println("Predicted classification: " + classification.getLanguageName());
         }
-
-        System.out.println("\nReading file and predicting...");
-        PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
-                Lang.Unidentified,
-                vectorSize,
-                ngramLength
-        );
-
-        BufferedReader fileIn = new BufferedReader(new FileReader(inputFile));
-        String line;
-        while ((line = fileIn.readLine()) != null) {
-            dist.recordSample(line);
-        }
-
-        MLData sample = new BasicMLData(dist.getFrequencies());
-        Lang classification = Lang.values()[network.classify(sample)];
-        System.out.println("Predicted classification: " + classification.getLanguageName());
     }
 }

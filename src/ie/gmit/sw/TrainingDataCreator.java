@@ -6,6 +6,7 @@ import ie.gmit.sw.test.TestAIClassification;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class TrainingDataCreator {
     private NetworkSelection networkSelection;
@@ -34,6 +35,8 @@ public class TrainingDataCreator {
         BufferedReader in = new BufferedReader(new FileReader(samplesPath));
         List<PartitionedHashedLangDist> dists = new ArrayList<>();
         String line;
+        String pattern = "\\((.*)\\)\\s*|[0-9]\\s*";
+        Pattern toRemove = Pattern.compile(pattern);
         // read file line by line
         while ((line = in.readLine()) != null) {
             line = line.trim();
@@ -45,6 +48,7 @@ public class TrainingDataCreator {
             }
 
             String sample = line.substring(0, atPos).toLowerCase();
+            sample = toRemove.matcher(sample).replaceAll("");
 
             PartitionedHashedLangDist dist = new PartitionedHashedLangDist(
                     lang,
