@@ -1,15 +1,18 @@
 package ie.gmit.sw.language;
 
+// language distribution; records a language sample's n-grams into a hashed feature vector.
+// reworked from the previous language detection assignment.
+//   (surprisingly, this is the only part that I managed to reuse from that...)
 public class LangDist {
     private Lang lang;
     private int numRecords;
     private int hashRange;
-    private int[] freqs;
+    private int[] vector;
 
     public LangDist(Lang lang, int hashRange) {
         this.lang = lang;
         this.hashRange = hashRange;
-        freqs = new int[hashRange];
+        vector = new int[hashRange];
     }
 
     public Lang getLang() {
@@ -20,46 +23,50 @@ public class LangDist {
         return numRecords;
     }
 
+    public int getHashRange() {
+        return hashRange;
+    }
+
+    // splits a sample line into n-grams of size k and records them into the feature vector
     public void recordSample(String line, int k) {
         char[] sample = line.toCharArray();
-        char[] kmer = new char[k];
+        char[] ngram = new char[k];
 
         for (int i = 0; i <= sample.length - k; i++) {
-            // build k-mer array
+            // build n-gram array
             for (int j = 0; j < k; j++) {
-                kmer[j] = sample[i + j];
+                ngram[j] = sample[i + j];
             }
 
-            recordKmer(kmer);
+            recordNgram(ngram);
             numRecords++;
         }
     }
 
-    public void recordKmer(char[] kmer) {
+    // hashes an n-gram and records the "hit" in the feature vector
+    public void recordNgram(char[] ngram) {
         // hash implementation based on String.hashcode()
         int hash = 17;
 
-        for (int i = 0; i < kmer.length; i++) {
-            hash = 31 * hash + kmer[i];
+        for (int i = 0; i < ngram.length; i++) {
+            hash = 31 * hash + ngram[i];
         }
 
         // compute array index (ignoring sign bit)
         int index = (hash & 0x7FFFFFFF) % hashRange;
-        // record k-mer
-        freqs[index]++;
+        // record n-gram hit
+        vector[index]++;
     }
 
+    // get the relative frequencies of the n-gram distribution from the feature vector
+    // (meaning the frequencies sum to 1)
     public double[] getFrequencies() {
         double[] dist = new double[hashRange];
         for (int i = 0; i < hashRange; i++) {
-            dist[i] = (double) freqs[i] / getNumRecords();
+            dist[i] = (double) vector[i] / getNumRecords();
         }
 
         return dist;
 
-    }
-
-    public int getHashRange() {
-        return hashRange;
     }
 }

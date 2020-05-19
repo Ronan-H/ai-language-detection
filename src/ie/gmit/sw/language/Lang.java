@@ -1,8 +1,6 @@
 package ie.gmit.sw.language;
 
-/**
- * Enumeration of languages with their names.
- */
+// enumeration of languages with their names.
 public enum Lang {
 	Achinese ("Achinese"),
 	Afrikaans ("Afrikaans"),
@@ -239,7 +237,8 @@ public enum Lang {
 	Yiddish ("Yiddish"),
 	Yoruba ("Yoruba"),
 	Zeeuws ("Zeeuws"),
-	// unidentified language (assigned to user query)
+
+	// unidentified language (assigned to user's sample input)
 	Unidentified ("Unidentified");
 
 	private final String language;
@@ -248,11 +247,7 @@ public enum Lang {
         this.language = language;
     }
 
-	/**
-	 * Get the name of a language enum.
-	 *
-	 * @return Name of language.
-	 */
+	// returns the name of a language enum.
 	public String getLanguageName() {
         return this.language;
     }
