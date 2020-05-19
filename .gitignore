@@ -72,8 +72,9 @@ fabric.properties
 # Libraries
 servlet-api.jar
 
-# Compiled class files
+# Compiled output
 *.class
+language-nn.jar
 
 # training data/model files
 neural-network.nn
