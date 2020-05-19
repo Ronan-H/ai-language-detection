@@ -2,7 +2,7 @@ package ie.gmit.sw.test;
 
 import java.util.regex.Pattern;
 
-public class TestRegex {
+public class TestRegexPreprocessing {
     public static void main(String[] args) {
         String pattern = "\\((.*)\\)\\s*|\\[[0-9]*\\]\\s*";
         Pattern toRemove = Pattern.compile(pattern);

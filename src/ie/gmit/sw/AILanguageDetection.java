@@ -12,17 +12,7 @@ import static java.lang.System.out;
 public class AILanguageDetection {
     public void go() throws IOException {
         // print the program header
-        out.println();
-        out.println(" =================================");
-        out.println(" |     AI Language Detection     |");
-        out.println(" |        By Ronan Hanley        |");
-        out.println(" =================================\n");
-
-        out.println("The flow of this application is as follows:");
-        out.println("  1. Creation of the training data");
-        out.println("  2. Network topology and training");
-        out.println("  3. Accuracy, sensitivity, and specificity stats");
-        out.println("  4. Test your own input (from a file)\n");
+        printHeader();
 
         NetworkSelection networkSelection = NetworkSelectionFactory.getInstance().getStandardSelections();
         if (networkSelection.shouldUseOptimizedDefaults()) {
@@ -56,5 +46,30 @@ public class AILanguageDetection {
         networkManager.allowUserInputPredictions();
 
         System.out.println("\nFinished. Exiting...\n");
+    }
+
+    private void printHeader() {
+        out.println();
+        out.println(" =================================");
+        out.println(" |     AI Language Detection     |");
+        out.println(" |        By Ronan Hanley        |");
+        out.println(" =================================\n");
+
+        out.println("The flow of this application is as follows:");
+        out.println("1. Network configuration by the user");
+        out.println("2. Training data creation phase");
+        out.println("3. Training phase");
+        out.println("4. Validation phase");
+        out.println("5. Prediction phase (of user input)\n");
+
+        out.println("Network topology used:");
+        out.println("  (CLI selectable options are written in square brackets, everything else is fixed):");
+        out.println("Input format: [vectorSize] * [ngramLength] input vector of FP numbers in the range 0..1 (adds to 1),");
+        out.println("              followed by a 235 length one-hot encoding to specify the sample's language,");
+        out.println("                limiting language samples to [sampleLimit] samples per language");
+        out.println("Input layer:  null (linear) activation, has bias, neurons matching the input format 1:1,                [dropout] applied");
+        out.println("Hidden layer: tanh() activation,        has bias, [hiddenSize] neurons (based on the selected formula), [dropout] applied");
+        out.println("Output layer: SoftMax() activation,      no bias, 235 neurons,                                          [dropout] applied");
+        out.println("Training:     using 5-fold cross validation, for [numEpochs]\n");
     }
 }

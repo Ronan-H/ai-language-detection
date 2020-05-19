@@ -50,10 +50,10 @@ public class NetworkSelection {
     public boolean shouldUseOptimizedDefaults() {
         String[] options = {
                 "Let me pick what parameters to use",
-                "Use the \"optimal\" default parameters for all options"
+                "Use the optimal default parameters for all options"
         };
 
-        out.println("Would you like to choose all parameters for the neural network, or use the optimized default parameters?");
+        out.println("Would you like to choose all the parameters for the neural network, or use the optimized defaults?");
         int chosen = getUserOption(options);
 
         return chosen == 2;

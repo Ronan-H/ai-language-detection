@@ -30,7 +30,7 @@ public class PredictionPhase extends NetworkPhase {
 
     @Override
     public void executePhase() throws IOException {
-        System.out.println("== Live Data Prediction ==");
+        System.out.println("== Prediction phase (of user input) ==");
         System.out.println("You will now have the opportunity to predict \"live\" language data from a file.\n");
 
         System.out.println("Loading parameters...");

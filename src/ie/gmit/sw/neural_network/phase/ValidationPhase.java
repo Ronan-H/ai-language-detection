@@ -30,7 +30,7 @@ public class ValidationPhase extends NetworkPhase {
 
     @Override
     public void executePhase() throws IOException {
-        System.out.println("== Validation ==");
+        System.out.println("== Validation phase ==");
         System.out.println("Loading parameters...");
         int vectorSize = (Integer) getSelectionChoice("vectorSize");
         int ngramLength = (Integer) getSelectionChoice("ngramLength");

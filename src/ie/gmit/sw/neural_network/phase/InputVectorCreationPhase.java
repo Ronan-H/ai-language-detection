@@ -25,7 +25,7 @@ public class InputVectorCreationPhase extends NetworkPhase {
 
     @Override
     public void executePhase() throws IOException {
-        System.out.println("== Training data set creation ==");
+        System.out.println("== Training data creation phase ==");
         System.out.println("Loading parameters...");
         int vectorSize = (Integer) getSelectionChoice("vectorSize");
         int ngramLength = (Integer) getSelectionChoice("ngramLength");

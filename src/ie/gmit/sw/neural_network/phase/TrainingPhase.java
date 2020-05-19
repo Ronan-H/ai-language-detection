@@ -19,8 +19,6 @@ import org.encog.persist.EncogDirectoryPersistence;
 import org.encog.util.csv.CSVFormat;
 
 import java.io.File;
-import java.io.IOException;
-
 public class TrainingPhase extends NetworkPhase {
     private File savePath;
     private int inputs;
@@ -38,17 +36,13 @@ public class TrainingPhase extends NetworkPhase {
     }
 
     public void train() {
-        try {
-            executePhase();
-            onPhaseFinished();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+        executePhase();
+        onPhaseFinished();
     }
 
     @Override
-    public void executePhase() throws IOException {
-        System.out.println("== Training ==");
+    public void executePhase()  {
+        System.out.println("== Training phase ==");
         System.out.println("Loading parameters...");
         int numEpochs = (Integer) getSelectionChoice("numEpochs");
         double dropout = (Double) getSelectionChoice("dropout");
@@ -100,8 +94,7 @@ public class TrainingPhase extends NetworkPhase {
         int minutes = (int) Math.floor(seconds / 60);
         double remSeconds = seconds - (minutes * 60);
 
-        System.out.println("\nFinished training.");
-        System.out.printf("Time taken: %dm %.2fs%n", minutes, remSeconds);
+        System.out.printf("\nFinished training. Time taken: %dm %.2fs%n%n", minutes, remSeconds);
         Encog.getInstance().shutdown();
 
         System.out.printf("Saving the model to file: %s%n", savePath.getName());

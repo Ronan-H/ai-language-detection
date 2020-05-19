@@ -15,9 +15,9 @@ public abstract class NetworkPhase {
     public abstract void executePhase() throws IOException;
 
     protected void onPhaseFinished() {
-        // TODO This doesn't work properly
-        //System.out.println("Press enter to continue...");
-        //UserInput.getScanner().nextLine();
+        System.out.print("<< Press enter to continue to the next phase >>");
+        UserInput.getScanner().nextLine();
+        System.out.println();
     }
 
     public Object getSelectionChoice(String selectionKey) {
