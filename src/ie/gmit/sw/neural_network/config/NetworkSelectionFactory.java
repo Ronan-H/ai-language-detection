@@ -1,5 +1,6 @@
 package ie.gmit.sw.neural_network.config;
 
+// defines the selections that can be made using a NetworkSelection object
 public class NetworkSelectionFactory {
     private static NetworkSelectionFactory instance;
 
@@ -13,6 +14,8 @@ public class NetworkSelectionFactory {
         return instance;
     }
 
+    // returns a NetworkSelection object that represents all of the neural network configuration
+    // that can be made in this assignment
     public NetworkSelection getStandardSelections() {
         NetworkSelection networkSelection = new NetworkSelection();
 
@@ -22,8 +25,8 @@ public class NetworkSelectionFactory {
                 "N-gram feature vector size",
                         "This decides the fixed space that n-gram frequency data will have to be \"squashed\" into.",
                         "A value too low could introduce too many collisions, while a value too high could overwhelm the network with input data.",
-                        new Integer[] {128, 256, 512},
-                        256
+                        new Integer[] {128, 200, 256, 350, 512},
+                        350
                 )
         );
 
@@ -55,8 +58,8 @@ public class NetworkSelectionFactory {
                         "Number of epochs to run",
                         "One \"epoch\" means on full pass over the data during training.",
                         "Running for too few epochs won't give the neural net enough training, while running for too many could cause overfitting.",
-                        new Integer[] {10, 13, 15, 20},
-                        13
+                        new Integer[] {10, 13, 15, 17, 20},
+                        15
                 )
         );
 
@@ -66,8 +69,8 @@ public class NetworkSelectionFactory {
                         "Dropout proportion",
                         "\"Dropout\" causes the network to ignore random neurons during training.",
                         "A higher dropout value could help prevent overfitting. Too much dropout, however, could deprive the network of enough data to make good predictions.",
-                        new Double[] {0.0, 0.25, 0.5, 0.75, 0.9},
-                        0.9
+                        new Double[] {0.0, 0.25, 0.5, 0.75, 0.85, 0.9},
+                        0.85
                 )
         );
 

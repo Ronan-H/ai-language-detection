@@ -13,6 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static java.lang.System.out;
+
+// the phase of evaluating a neural network, showing it's accuracy and precision
 public class ValidationPhase extends NetworkPhase {
     private File samplesPath;
     private File nnPath;
@@ -30,16 +33,16 @@ public class ValidationPhase extends NetworkPhase {
 
     @Override
     public void executePhase() throws IOException {
-        System.out.println("== Validation phase ==");
-        System.out.println("Loading parameters...");
+        out.println("== Validation phase ==");
+        out.println("Loading parameters...");
         int vectorSize = (Integer) getSelectionChoice("vectorSize");
         int ngramLength = (Integer) getSelectionChoice("ngramLength");
         int sampleLimit = (Integer) getSelectionChoice("sampleLimit");
 
-        System.out.printf("Loading the neural network from a file: %s%n", nnPath.getName());
+        out.printf("Loading the neural network from a file: %s%n", nnPath.getName());
         BasicNetwork network = (BasicNetwork) EncogDirectoryPersistence.loadObject(nnPath);
 
-        System.out.println("Generating validation statistics...\n");
+        out.println("Generating validation statistics...\n");
         int total = 0;
         int correct = 0;
         Map<Lang, LangStats> langStats = new HashMap<>();
@@ -48,21 +51,25 @@ public class ValidationPhase extends NetworkPhase {
             langStats.put(l, new LangStats(l));
         }
 
+        // run predictions on all samples in the input file, recording the results
         List<String[]> samples = new SampleFileReader(samplesPath).getSamples(sampleLimit);
         for (String[] sample : samples) {
             String sampleText = sample[0];
-            Lang lang = Lang.valueOf(sample[1]);
 
+            // make an n-gram vector distribution and record the sample
             PartitionedLangDist dist = new PartitionedLangDist(
                     Lang.Unidentified,
                     vectorSize,
                     ngramLength
             );
-
             dist.recordSample(sampleText);
+
+            // perform the classification
             MLData probs = new BasicMLData(dist.getFrequencies());
             Lang classification = Lang.values()[network.classify(probs)];
 
+            // update statistics
+            Lang lang = Lang.valueOf(sample[1]);
             if (classification == lang) {
                 correct++;
                 langStats.get(lang).recordTruePositive();
@@ -76,15 +83,16 @@ public class ValidationPhase extends NetworkPhase {
 
         double accuracy = (correct / (double) total) * 100.0;
 
+        // print stats
         LangStats[] sortedStats = langStats.values().toArray(new LangStats[0]);
         Arrays.sort(sortedStats);
-        System.out.println("Prediction precision breakdown:");
+        out.println("Prediction precision breakdown:");
         for (LangStats stats : sortedStats) {
-            System.out.println(stats);
+            out.println(stats);
         }
 
-        System.out.printf("\n\tCorrect predictions: %d%n", correct);
-        System.out.printf("\tTotal samples tested: %d%n", total);
-        System.out.printf("\tAccuracy: %.2f%%%n%n", accuracy);
+        out.printf("\n\tCorrect predictions: %d%n", correct);
+        out.printf("\tTotal samples tested: %d%n", total);
+        out.printf("\tAccuracy: %.2f%%%n%n", accuracy);
     }
 }

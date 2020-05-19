@@ -2,6 +2,7 @@ package ie.gmit.sw;
 
 import java.util.Scanner;
 
+// singleton access to a Scanner object, so it can be easily shared across classes
 public class UserInput {
     private static Scanner console;
 

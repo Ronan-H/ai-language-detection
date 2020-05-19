@@ -4,6 +4,7 @@ import ie.gmit.sw.neural_network.config.NetworkSelection;
 
 import java.io.IOException;
 
+// a facade for running the different neural network phases
 public class PhaseManager {
     private InputVectorCreationPhase trainingDataCreator;
     private TrainingPhase networkTrainer;

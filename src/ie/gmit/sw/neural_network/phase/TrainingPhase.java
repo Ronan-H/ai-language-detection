@@ -19,6 +19,10 @@ import org.encog.persist.EncogDirectoryPersistence;
 import org.encog.util.csv.CSVFormat;
 
 import java.io.File;
+
+import static java.lang.System.out;
+
+// the phase of training a neural network
 public class TrainingPhase extends NetworkPhase {
     private File savePath;
     private int inputs;
@@ -28,6 +32,7 @@ public class TrainingPhase extends NetworkPhase {
         super(networkSelection);
         this.savePath = new File(savePath);
 
+        // compute number of inputs and outputs for use in the hidden layer formula
         int vectorSize = (Integer) getSelectionChoice("vectorSize");
         int ngramLength = (Integer) getSelectionChoice("ngramLength");
 
@@ -42,15 +47,15 @@ public class TrainingPhase extends NetworkPhase {
 
     @Override
     public void executePhase()  {
-        System.out.println("== Training phase ==");
-        System.out.println("Loading parameters...");
+        out.println("== Training phase ==");
+        out.println("Loading parameters...");
         int numEpochs = (Integer) getSelectionChoice("numEpochs");
         double dropout = (Double) getSelectionChoice("dropout");
 
-        System.out.println("Computing hidden layer size:");
+        out.println("Computing hidden layer size:");
         int hiddenSize = computeHiddenLayerSize();
 
-        System.out.println("Building the neural network topology...\n");
+        out.println("Building the neural network topology...\n");
         BasicNetwork network = new BasicNetwork();
         network.addLayer(new BasicLayer(null, true, inputs, dropout));
         network.addLayer(new BasicLayer(new ActivationTANH(), true, hiddenSize, dropout));
@@ -58,7 +63,7 @@ public class TrainingPhase extends NetworkPhase {
         network.getStructure().finalizeStructure();
         network.reset();
 
-        System.out.println("Loading the training data...\n");
+        out.println("Loading the training data...\n");
         DataSetCODEC dsc = new CSVDataCODEC(
                 new File("training-data.csv"),
                 CSVFormat.ENGLISH,
@@ -77,39 +82,44 @@ public class TrainingPhase extends NetworkPhase {
 
         CrossValidationKFold cv = new CrossValidationKFold(train, 5);
 
-        System.out.println("Training...");
+        out.println("Training...");
+        // record the start time
         long startTime = System.currentTimeMillis();
-        //Train the neural network
+        // train the neural network
         for (int epoch = 1; epoch <= numEpochs; epoch++) {
-            System.out.printf("\tEpoch %2d ... ", epoch);
+            out.printf("\tEpoch %2d ... ", epoch);
             cv.iteration();
-            System.out.println(" Error: " + cv.getError());
+            out.println(" Error: " + cv.getError());
         }
 
         cv.finishTraining();
 
-        // timer calculations
+        // timer calculations (timer stops here)
         long timeTaken = System.currentTimeMillis() - startTime;
         double seconds = (double) timeTaken / 1000;
         int minutes = (int) Math.floor(seconds / 60);
         double remSeconds = seconds - (minutes * 60);
 
-        System.out.printf("\nFinished training. Time taken: %dm %.2fs%n%n", minutes, remSeconds);
+        // print the training time
+        out.printf("\nFinished training. Time taken: %dm %.2fs%n%n", minutes, remSeconds);
         Encog.getInstance().shutdown();
 
-        System.out.printf("Saving the model to file: %s%n", savePath.getName());
+        out.printf("Saving the model to file: %s%n", savePath.getName());
         EncogDirectoryPersistence.saveObject(savePath, network);
 
-        System.out.println("Finished training the model.\n");
+        out.println("Finished training the model.\n");
     }
 
+    // compute the size of the hidden layer for the network, based on the formula that the user chose
     private int computeHiddenLayerSize() {
+        // show the expression that the user chose, along with the subbed-in values
         String expression = (String) getSelectionChoice("hiddenSize");
         String subbedExpression = expression.replace("input", Integer.toString(inputs))
                                             .replace("output", Integer.toString(outputs));
-        System.out.printf("\t%s = %s = ", expression, subbedExpression);
-        int result;
+        out.printf("\t%s = %s = ", expression, subbedExpression);
 
+        // translate the String expression to a programmatical expression
+        int result;
         switch (expression) {
             case "input + output":
                 result = inputs + outputs;
@@ -127,11 +137,11 @@ public class TrainingPhase extends NetworkPhase {
                 result =  (int) Math.sqrt(inputs * outputs);
                 break;
             default:
-                // selected option is invalid...this indicated a compile time bug
+                // selected option is invalid...this indicates a compile time bug, this should never happen
                 result = -1;
         }
 
-        System.out.println(result);
+        out.println(result);
         return result;
     }
 }

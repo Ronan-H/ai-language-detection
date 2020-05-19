@@ -8,6 +8,9 @@ import ie.gmit.sw.neural_network.config.NetworkSelection;
 import java.io.*;
 import java.util.*;
 
+import static java.lang.System.out;
+
+// the phase of creating the training data vectors, based on input samples
 public class InputVectorCreationPhase extends NetworkPhase {
     private File samplesPath;
     private File outPath;
@@ -20,21 +23,20 @@ public class InputVectorCreationPhase extends NetworkPhase {
 
     public void create() throws IOException {
         executePhase();
-        onPhaseFinished();
     }
 
     @Override
     public void executePhase() throws IOException {
-        System.out.println("== Training data creation phase ==");
-        System.out.println("Loading parameters...");
+        out.println("== Training data creation phase ==");
+        out.println("Loading parameters...");
         int vectorSize = (Integer) getSelectionChoice("vectorSize");
         int ngramLength = (Integer) getSelectionChoice("ngramLength");
         int sampleLimit = (Integer) getSelectionChoice("sampleLimit");
 
-        System.out.printf("Creating hash vectors from samples in input file: %s%n", samplesPath.getName());
+        out.printf("Creating hash vectors from samples in input file: %s%n", samplesPath.getName());
 
         List<String[]> samples = new SampleFileReader(samplesPath).getSamples(sampleLimit);
-        List<PartitionedLangDist> dists = new ArrayList<>();
+        List<LangDist> dists = new ArrayList<>();
         for (String[] sample : samples) {
             String sampleText = sample[0];
             Lang lang = Lang.valueOf(sample[1]);
@@ -48,29 +50,28 @@ public class InputVectorCreationPhase extends NetworkPhase {
             dists.add(dist);
         }
 
-        System.out.printf("Writing vectorized training data to file: %s%n", outPath.getName());
+        out.printf("Writing vectorized training data to file: %s%n", outPath.getName());
         try {
             writeDistsToFile(dists);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println("Finished creating the training data.\n");
+        out.println("Finished creating the training data.\n");
     }
 
-    private void writeDistsToFile(List<PartitionedLangDist> dists) throws IOException {
+    // writes vectorized training data to a file
+    private void writeDistsToFile(List<LangDist> dists) throws IOException {
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outPath)));
 
         for (LangDist dist : dists) {
-            double[] normalizedFreqs = dist.getFrequencies();
-
             // write hash vector values
-            for (double normalizedFreq : normalizedFreqs) {
+            for (double normalizedFreq : dist.getFrequencies()) {
                 // truncate to 5 decimal places to save disk space
                 out.printf("%.5f,", normalizedFreq);
             }
 
-            // write language vector
+            // write language "one-hot encoding" vector
             Lang[] langs = Lang.values();
             for (int i = 0; i < langs.length - 1; i++) {
                 Lang l = langs[i];

@@ -1,5 +1,6 @@
 package ie.gmit.sw.neural_network.config;
 
+// represents a single selection option that can be made to configure a neural network
 public class Selection<T> {
     private String prompt;
     private String explanation;
@@ -16,6 +17,7 @@ public class Selection<T> {
         this.options = options;
         this.best = best;
 
+        // create option labels using the options provided (which may not be strings)
         optionLabels = new String[options.length];
         for (int i = 0; i < options.length; i++) {
             optionLabels[i] = options[i].toString();
@@ -54,6 +56,7 @@ public class Selection<T> {
         return guidance;
     }
 
+    // prints this options description along with the chosen value
     @Override
     public String toString() {
         return String.format("\t%s: %s%n", prompt, chosen);

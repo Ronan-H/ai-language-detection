@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import static java.lang.System.out;
 
+// orchestrates the overall flow of the language detection application
 public class AILanguageDetection {
     public void go() throws IOException {
         // print the program header
@@ -16,6 +17,7 @@ public class AILanguageDetection {
 
         NetworkSelection networkSelection = NetworkSelectionFactory.getInstance().getStandardSelections();
         if (networkSelection.shouldUseOptimizedDefaults()) {
+            // load optimized defaults ("best" values)
             networkSelection.loadOptimizedDefaults();
         }
         else {
@@ -26,7 +28,8 @@ public class AILanguageDetection {
         // print network configuration
         out.println(networkSelection.toString());
 
-        PhaseManager networkManager = new PhaseManager(
+        // initialise network phases
+        PhaseManager phaseManager = new PhaseManager(
                 networkSelection,
                 "./wili-2018-Small-11750-Edited.txt",
                 "./training-data.csv",
@@ -34,33 +37,27 @@ public class AILanguageDetection {
         );
 
         // create data set using chosen parameters
-        networkManager.createTrainingData();
+        phaseManager.createTrainingData();
 
         // train network using user parameters
-        networkManager.trainNetwork();
+        phaseManager.trainNetwork();
 
         // test accuracy/sensitivity/specificity
-        networkManager.runValidationTests();
+        phaseManager.runValidationTests();
 
         // allow the user to specify their own language sample as input, from a file
-        networkManager.allowUserInputPredictions();
+        phaseManager.allowUserInputPredictions();
 
         System.out.println("\nFinished. Exiting...\n");
     }
 
+    // prints the program header, containing useful information about the program
     private void printHeader() {
         out.println();
         out.println(" =================================");
         out.println(" |     AI Language Detection     |");
         out.println(" |        By Ronan Hanley        |");
         out.println(" =================================\n");
-
-        out.println("The flow of this application is as follows:");
-        out.println("1. Network configuration by the user");
-        out.println("2. Training data creation phase");
-        out.println("3. Training phase");
-        out.println("4. Validation phase");
-        out.println("5. Prediction phase (of user input)\n");
 
         out.println("Network topology used:");
         out.println("  (CLI selectable options are written in square brackets, everything else is fixed):");
@@ -70,6 +67,13 @@ public class AILanguageDetection {
         out.println("Input layer:  null (linear) activation, has bias, neurons matching the input format 1:1,                [dropout] applied");
         out.println("Hidden layer: tanh() activation,        has bias, [hiddenSize] neurons (based on the selected formula), [dropout] applied");
         out.println("Output layer: SoftMax() activation,      no bias, 235 neurons,                                          [dropout] applied");
-        out.println("Training:     using 5-fold cross validation, for [numEpochs]\n");
+        out.println("Training:     using 5-fold cross validation, for [numEpochs]\n\n\n");
+
+        out.println("The flow of this application is as follows:");
+        out.println("1. Network configuration by the user");
+        out.println("2. Training data creation phase");
+        out.println("3. Training phase");
+        out.println("4. Validation phase");
+        out.println("5. Prediction phase (of user input)\n\n\n");
     }
 }

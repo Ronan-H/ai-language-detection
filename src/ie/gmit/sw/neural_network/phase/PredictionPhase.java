@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
+import static java.lang.System.out;
+
+
+// the phase of predicting the language of a user specified input file
 public class PredictionPhase extends NetworkPhase {
     private File nnPath;
     private Scanner console;
@@ -21,6 +25,7 @@ public class PredictionPhase extends NetworkPhase {
     public PredictionPhase(NetworkSelection networkSelection, String nnPath) {
         super(networkSelection);
         this.nnPath = new File(nnPath);
+        // get a handle on the shared Scanner object
         console = UserInput.getScanner();
     }
 
@@ -30,37 +35,41 @@ public class PredictionPhase extends NetworkPhase {
 
     @Override
     public void executePhase() throws IOException {
-        System.out.println("== Prediction phase (of user input) ==");
-        System.out.println("You will now have the opportunity to predict \"live\" language data from a file.\n");
+        out.println("== Prediction phase (of user input) ==");
+        out.println("You will now have the opportunity to predict \"live\" language data from a file.\n");
 
-        System.out.println("Loading parameters...");
+        out.println("Loading parameters...");
         int vectorSize = (Integer) getSelectionChoice("vectorSize");
         int ngramLength = (Integer) getSelectionChoice("ngramLength");
 
-        System.out.printf("Loading the nerual network from file: %s%n", nnPath.getName());
+        out.printf("Loading the nerual network from file: %s%n", nnPath.getName());
         BasicNetwork network = (BasicNetwork) EncogDirectoryPersistence.loadObject(nnPath);
 
         String input;
         File inputFile;
         while (true) {
-            System.out.println("Enter the path of a file containing sample language data to predict.");
-            System.out.println("(or enter \"exit\" to exit)\n");
-            System.out.print("> ");
+            out.println("Enter the path of a file containing sample language data to predict (relative or absolute)");
+            out.println("(or enter \"exit\" to exit)\n");
+            out.print("> ");
             input = console.nextLine();
 
             if (input.trim().equalsIgnoreCase("exit")) {
+                // returning from this method naturally exits the program
                 return;
             }
             else {
+                // make sure the specified file is valid
                 inputFile = new File(input);
-                if (!inputFile.exists() || inputFile.isDirectory()) {
-                    System.out.println("Invalid file, please try again.\n");
+                if (!inputFile.exists() || inputFile.isDirectory()) { // must exist and not be a directory...
+                    out.println("Invalid file, please try again.\n");
                     continue;
                 }
             }
 
-            System.out.println("\nReading file and predicting...");
+            // at this point the user has specified a valid input file
+            out.println("\nReading file and predicting...");
 
+            // process each line of the text file into a hashed feature vector of n-grams
             List<String> samples = new SampleFileReader(inputFile).getUnknownSamples();
             PartitionedLangDist dist = new PartitionedLangDist(
                     Lang.Unidentified,
@@ -72,9 +81,10 @@ public class PredictionPhase extends NetworkPhase {
                 dist.recordSample(sample);
             }
 
+            // make a language prediction and display it to the user
             MLData sample = new BasicMLData(dist.getFrequencies());
             Lang classification = Lang.values()[network.classify(sample)];
-            System.out.printf("Predicted classification: %s%n%n", classification.getLanguageName());
+            out.printf("Predicted classification: %s%n%n", classification.getLanguageName());
         }
     }
 }

@@ -14,6 +14,7 @@ public class NetworkSelection {
     private Map<String, Selection> selectionMap;
     private Scanner console;
 
+    // this constructor is protected so that instances can only be created from the NetworkSelectionFactory
     protected NetworkSelection() {
         selections = new ArrayList<>();
         selectionMap = new HashMap<>();
