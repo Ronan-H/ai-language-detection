@@ -119,7 +119,7 @@ public class TrainingPhase extends NetworkPhase {
         out.printf("\t%s = %s = ", expression, subbedExpression);
 
         // translate the String expression to a programmatical expression
-        int result;
+        int result = -1;
         switch (expression) {
             case "input + output":
                 result = inputs + outputs;
@@ -137,8 +137,11 @@ public class TrainingPhase extends NetworkPhase {
                 result =  (int) Math.sqrt(inputs * outputs);
                 break;
             default:
-                // selected option is invalid...this indicates a compile time bug, this should never happen
-                result = -1;
+                // no match found for the expression
+                // this should never happen; indicates a compile time bug
+                out.printf("%n%nFatal: hidden size formula option not recognized \"%s\"%n", expression);
+                out.println("Exiting...");
+                System.exit(1);
         }
 
         out.println(result);
